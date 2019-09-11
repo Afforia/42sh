@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:01:23 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/11 13:34:20 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/11 20:20:31 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -305,5 +305,7 @@ int						ft_exit(char **av);
 char					**ft_isnot(char **in);
 int						ft_shell_put_test(char *str);
 int						ft_type(char **av);
+void					ft_test_put_env(char *str);
+int						ft_printenv(char **av);
 
 #endif

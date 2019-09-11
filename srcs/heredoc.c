@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/02 22:03:52 by thaley            #+#    #+#             */
-/*   Updated: 2019/09/11 13:43:37 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/11 19:36:04 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ t_cmdlist		*ft_local_assig(t_cmdlist *cur_cmd)
 						cur_cmd->locals = ft_assig_add(cur_cmd, i);
 					else if (j > 0 && (!(ft_isalpha(cur_cmd->avcmd[i][j])))
 					&& (!(ft_isdigit(cur_cmd->avcmd[i][j])))
-					&& (cur_cmd->avcmd[i][j] != '_'))
+					&& (!(cur_cmd->avcmd[i][j] == '_')))
 						return (cur_cmd);
 					j--;
 				}
@@ -133,4 +133,26 @@ int				ft_type(char **av)
 		i++;
 	}
 	return (1);
+}
+
+void					ft_test_put_env(char *str)
+{
+	char	*tmp;
+	int		j;
+	int i;
+	
+	if ((tmp = ft_strchr(str, '=')) && ((j = tmp - str) > 0))
+	{
+		i = 0;
+		while (g_envi && g_envi->env && g_envi->env[i])
+		{
+			if (ft_strncmp(g_envi->env[i], str, j + 1) == 0)
+			{
+				free(g_envi->env[i]);
+				g_envi->env[i] = ft_strdup(str);
+				return ;
+			}
+			i++;
+		}
+	}	
 }

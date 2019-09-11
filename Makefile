@@ -7,7 +7,8 @@ FILES	=	built_in exec_list ft_built_cd ft_built_env main parser\
 			utils_great utils_great2 utils_pipe utils_pipe2 utils_pipe3\
 			utils_pipe_split utils_pipe_split2 utils_great3\
 			ft_get_less_tst hash heredoc ft_replace exec_list2\
-			ft_built_cd2 locals ft_built_env2 ft_built_env3
+			ft_built_cd2 locals ft_built_env2 ft_built_env3 \
+			ft_built_env4
 
 SRC_D	=	srcs
 INC_D	=	includes

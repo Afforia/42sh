@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/26 15:38:41 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/11 13:13:39 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/11 20:34:06 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ int			ft_test_built_in(char *path)
 	else if (path && ft_strcmp(path, "echo") == 0)
 		return (1);
 	else if (path && ft_strcmp(path, "type") == 0)
+		return (1);
+	else if (path && ft_strcmp(path, "printenv") == 0)
 		return (1);
 	return (0);
 }

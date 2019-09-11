@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/27 18:24:59 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/10 16:36:48 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/11 19:58:38 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ char	**ft_set_shell(char *parm, char *value)
 		free(g_shell[i]);
 		g_shell[i] = str;
 	}
+	ft_test_put_env(str);
 	if ((i = ft_strequ(parm, "PATH")) == 1)
 		ft_reset_cmd_list();
 	return (NULL);
@@ -112,7 +113,6 @@ char	*ft_get_env(char *parm)
 	char	*ret;
 
 	ret = NULL;
-//	if (!(ret = ft_get_env2(parm, g_envi->env)))
 	ret = ft_get_env2(parm, g_shell);
 	return (ret);
 }

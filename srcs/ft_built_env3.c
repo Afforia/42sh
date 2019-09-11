@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/27 18:24:59 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/11 11:27:47 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/11 19:41:31 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ int		ft_check_exp_name(char *str, int j)
 	{
 		while (str[++i] && i < j)
 		{
-			if (!(ft_isalpha(str[i]) || ft_isdigit(str[i])))
+			if (!(ft_isalpha(str[i]) || ft_isdigit(str[i]) ||
+				(str[i] == '_')))
 				return (0);
 		}
 	}
@@ -97,10 +98,11 @@ int		ft_shell_put_test(char *str)
 		i = 0;
 		while (g_shell && g_shell[i])
 		{
-			if (ft_strncmp(g_shell[i], str, j) == 0)
+			if (ft_strncmp(g_shell[i], str, j + 1) == 0)
 			{
 				free(g_shell[i]);
 				g_shell[i] = ft_strdup(str);
+				ft_test_put_env(str);
 				str[0] = '\0';
 				return (1);
 			}
