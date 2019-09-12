@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/25 16:17:45 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/10 21:06:15 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/12 19:27:12 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void	ft_parse_line(char *str)
 			qflag = 0;
 		else if (qflag == 0 && str[i + i_cmd] == '\'')
 			qflag = 2;
-		if (qflag == 0 && str[i + i_cmd] == ';')
+		if (qflag == 0 && str[i + i_cmd] == ';' )
 		{
 			ft_parse_cmd(str + i_cmd, i);
 			i_cmd = i_cmd + i + 1;

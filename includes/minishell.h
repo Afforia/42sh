@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:01:23 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/11 20:20:31 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/12 21:42:44 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,15 @@ typedef struct			s_env
 	t_listf				*first_list;
 }						t_env;
 
-t_env					*g_envi;
+typedef struct			s_job
+{
+	char				*cmd;
+	pid_t				pgid;
+	int					status;
+	struct s_job		*next;
+}						t_job;
 
+t_env					*g_envi;
 char					*g_app_name;
 pid_t					g_pidchild;
 int						g_level;
@@ -82,6 +89,9 @@ int						g_and_or;
 int						g_not;
 int						g_rc;
 int						g_built_rc;
+int						g_subs_rc;
+t_job					*g_jobs;
+int						g_job;
 
 typedef struct			s_cmd
 {
@@ -279,7 +289,7 @@ unsigned int			hashly(char *str);
 char					*ft_clear_quotes(char *s);
 char					*ft_replays(char *s);
 char					*ft_repl_parm(char *s, int flag, int len);
-char					*ft_repl_env(char *s, int j);
+char					*ft_repl_env(char *s, int *j);
 char					*ft_repl_tilda(char *s, int j);
 char					*ft_repl_end_til(char *s, int j, int *flag);
 int						ft_repl_sym(char *s, int j);
@@ -305,7 +315,8 @@ int						ft_exit(char **av);
 char					**ft_isnot(char **in);
 int						ft_shell_put_test(char *str);
 int						ft_type(char **av);
-void					ft_test_put_env(char *str);
+int						ft_test_put_env(char *str);
 int						ft_printenv(char **av);
+char					*ft_repl_subs(char *s, int *k, int i);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/27 18:24:59 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/11 19:41:31 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/12 12:05:08 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,11 +98,11 @@ int		ft_shell_put_test(char *str)
 		i = 0;
 		while (g_shell && g_shell[i])
 		{
-			if (ft_strncmp(g_shell[i], str, j + 1) == 0)
+			if (ft_strncmp(g_shell[i], str, j + 1) == 0 &&
+				((ft_test_put_env(str)) == 1))
 			{
 				free(g_shell[i]);
 				g_shell[i] = ft_strdup(str);
-				ft_test_put_env(str);
 				str[0] = '\0';
 				return (1);
 			}

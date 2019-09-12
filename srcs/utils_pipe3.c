@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/07 10:50:36 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/11 22:10:27 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/12 21:50:26 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,8 @@ int		fd_set_nopipe(t_pipe *p_head)
 		return (-1);
 	}
 	p_head->cur_cmd->avcmd = ft_cmd_replays(p_head->cur_cmd->avcmd);
+	if (g_subs_rc == 1)
+		return (-1);
 	if (p_head->cur_cmd->built_in == 0)
 	{
 		if (!(p_head->cur_cmd->find_path = ft_get_file_path(

@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/02 22:03:52 by thaley            #+#    #+#             */
-/*   Updated: 2019/09/11 19:36:04 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/12 12:02:39 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,7 @@ int				ft_type(char **av)
 	return (1);
 }
 
-void					ft_test_put_env(char *str)
+int					ft_test_put_env(char *str)
 {
 	char	*tmp;
 	int		j;
@@ -150,9 +150,10 @@ void					ft_test_put_env(char *str)
 			{
 				free(g_envi->env[i]);
 				g_envi->env[i] = ft_strdup(str);
-				return ;
+				return (1);
 			}
 			i++;
 		}
-	}	
+	}
+	return (0);	
 }

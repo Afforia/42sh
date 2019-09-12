@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/10 20:43:11 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/12 18:37:09 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@ void	ft_init_glvar(char **av)
 	g_not = 0;
 	g_rc = 0;
 	g_built_rc = 0;
+	g_jobs = NULL;
+	g_job = 0;
 }
 
 int		ft_exit(char **av)

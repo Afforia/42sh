@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/11 12:14:16 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/12 21:47:12 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ char	*ft_repl_parm(char *s, int flag, int len)
 				flag = 0;
 				s = ft_repl_tilda(s, j);
 			}
-			s = ft_repl_env(s, j);
+			s = ft_repl_env(s, &j);
 		}
 		len = ft_strlen(s);
 	}
@@ -88,37 +88,11 @@ int		ft_repl_sym(char *s, int j)
 	i = 1;
 	while (s[j + i])
 	{
-		if (ft_strchr("!#%@\"\'^*()=\\.:", s[j + i]))
+		if (ft_strchr("!#%@\"\'^*()=\\.:$", s[j + i]))
 			break ;
 		i++;
 	}
 	return (i);
-}
-
-char	*ft_repl_env(char *s, int j)
-{
-	int		i;
-	char	*tmp;
-	char	*val;
-
-	i = ft_repl_sym(s, j);
-	tmp = ft_alloc_char(i);
-	tmp = ft_strncpy(tmp, s + j + 1, i - 1);
-	tmp[i - 1] = '\0';
-	if ((val = ft_get_env(tmp)))
-	{
-		free(tmp);
-		tmp = ft_alloc_char(ft_strlen(s) + ft_strlen(val) - (i - 1) + 1);
-		tmp[0] = '\0';
-		tmp = ft_strncat(tmp, s, j);
-		tmp = ft_strcat(tmp, val);
-		tmp = ft_strcat(tmp, s + j + i);
-		free(val);
-		free(s);
-		return (tmp);
-	}
-	free(tmp);
-	return (s);
 }
 
 char	**ft_cmd_replays(char **str)
@@ -127,6 +101,7 @@ char	**ft_cmd_replays(char **str)
 	int		i;
 
 	ret = NULL;
+	g_subs_rc = 0;
 	if (str)
 	{
 		i = 0;
