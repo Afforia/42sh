@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/25 16:17:45 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/12 19:27:12 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/13 19:05:24 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@ char	*ft_get_file_path(char *path, t_listf *first_list)
 	char			*ret;
 	unsigned int	hash;
 
-	if (!(path))
+	if (!(path) || !(cur = first_list))
 		return (NULL);
-	if (!(cur = first_list))
-		return (NULL);
+	if ((ret = ft_get_hash_path(path)))
+		return (ret);
 	hash = hashly(path);
 	while (cur)
 	{

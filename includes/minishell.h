@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:01:23 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/12 21:42:44 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/13 19:03:56 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,10 +64,20 @@ typedef struct			s_listf
 	struct s_listf		*next;
 }						t_listf;
 
+typedef struct			s_listh
+{
+	char				*path;
+	char				*file;
+	unsigned int		hash;
+	int					hashcount;
+	struct s_listh		*next;
+}						t_listh;
+
 typedef struct			s_env
 {
 	char				**env;
 	t_listf				*first_list;
+	t_listh				*hash_first;
 }						t_env;
 
 typedef struct			s_job
@@ -206,7 +216,6 @@ char					*ft_get_file(char *path);
 char					**ft_split_pipes(char *cmd);
 int						ft_get_count_in_pipe(char **av, int start);
 char					**ft_get_pipe_av(char **av, int start);
-//void					ft_get_redir_list(char **av, int start, t_cmdlist *cur_cmd);
 int						ft_test_pipe(char **av, int start);
 int						ft_test_built_in(char *path);
 t_cmdlist				*ft_free_cmd_list(t_cmdlist *first);
@@ -318,5 +327,13 @@ int						ft_type(char **av);
 int						ft_test_put_env(char *str);
 int						ft_printenv(char **av);
 char					*ft_repl_subs(char *s, int *k, int i);
+int						ft_cmd_hash(char **av);
+void					ft_print_one(char *av, int code);
+int						ft_print_hash(void);
+char					*ft_putfnbr(int nb, char *str);
+void					ft_hash_all_del(char *str);
+void					ft_hash_cmd_add(char *path, char *name);
+int						ft_hash_usage(char *av);
+char					*ft_get_hash_path(char *path);
 
 #endif
