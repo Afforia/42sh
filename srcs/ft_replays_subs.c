@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/12 21:53:05 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/16 22:02:05 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int		ft_test_sub(char *str, int i)
 	{
 		while (j <= i)
 		{
-			if (ft_strchr("!#%@\"\'^*()=\\.:$", str[j]))
+			if (ft_strchr("!@\"\'^*()\\.$", str[j]))
 				return (ft_ret_subs(str, i));
 			j++;
 		}
@@ -44,14 +44,12 @@ int		ft_test_sub(char *str, int i)
 	return (ft_ret_subs(str, i));
 }
 
-char	*ft_repl_subs(char *s, int *k, int i)
+char	*ft_get_parm_simple(char *s, int *k, int i)
 {
 	char	*tmp;
 	char	*val;
 	int		len;
 
-	if (ft_test_sub(s + *k + 2, i - 2) == 1)
-		return (s);
 	tmp = ft_alloc_char(i - 1);
 	tmp = ft_strncpy(tmp, s + *k + 2, i - 2);
 	tmp[i - 2] = '\0';
@@ -60,16 +58,16 @@ char	*ft_repl_subs(char *s, int *k, int i)
 	if ((val = ft_get_env(tmp)))
 		len = ft_strlen(val);
 	free(tmp);
-	tmp = ft_alloc_char(ft_strlen(s) + len - (i - 1) + 1);
+/*	tmp = ft_alloc_char(ft_strlen(s) + len - (i - 1) + 1);
 	tmp[0] = '\0';
 	tmp = ft_strncat(tmp, s, *k);
 	if (len > 0 && ((tmp = ft_strcat(tmp, val))))
 		free(val);
-	tmp = ft_strcat(tmp, s + *k + i);
+	tmp = ft_strcat(tmp, s + *k + i);*/
 	if (len == 0)
 		(*k)--;
-	free(s);
-	return (tmp);
+//	return (tmp);
+	return (val);
 }
 
 char	*ft_repl_env(char *s, int *k)

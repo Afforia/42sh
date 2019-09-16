@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/28 14:58:38 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/10 20:47:31 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/16 14:15:04 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ int		ft_is_dir(char *path)
 
 int		ft_check_dir(char *find_path)
 {
+	ft_set_shell("?", "1");
 	if ((access(find_path, F_OK)) == -1)
 	{
 		ft_print_msg(" : no such file or directory: ", find_path);
@@ -54,6 +55,7 @@ int		ft_check_dir(char *find_path)
 		g_built_rc = 1;
 		return (-1);
 	}
+	ft_set_shell("?", "0");
 	return (0);
 }
 

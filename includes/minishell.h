@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:01:23 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/13 19:03:56 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/16 17:46:33 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -335,5 +335,7 @@ void					ft_hash_all_del(char *str);
 void					ft_hash_cmd_add(char *path, char *name);
 int						ft_hash_usage(char *av);
 char					*ft_get_hash_path(char *path);
+int						ft_test_sub(char *str, int i);
+char					*ft_get_parm_simple(char *s, int *k, int i);
 
 #endif

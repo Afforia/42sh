@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 14:10:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/10 20:53:08 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/16 14:15:17 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,13 @@ void		ft_cd(char *path2, int flag)
 	if (!(tmp = ft_get_env("PWD")))
 	{
 		if (!(tmp = ft_strnew(255)))
-			exit_shell();
+			exit_shell(1);
 		getcwd(tmp, 255);
 	}
 	if ((p = ft_tst_cdpath(p)) && (ft_check_dir(p) == 0) && (chdir(p) == 0))
 	{
 		if (!(full = ft_strnew(255)))
-			exit_shell();
+			exit_shell(1);
 		getcwd(full, 255);
 		if (flag == 0 && p[0] == '/')
 			ft_set_shell("PWD", p);
@@ -107,6 +107,7 @@ int			ft_built_cd(char **av)
 
 	i = 0;
 	flag = 0;
+	ft_set_shell("?", "0");
 	while (av[++i])
 	{
 		if ((ft_cd_flag(av[i], &flag) == 1))
@@ -115,6 +116,7 @@ int			ft_built_cd(char **av)
 			{
 				ft_putstr_fd("cd : too many arguments\n", 2);
 				g_built_rc = 1;
+				ft_set_shell("?", "1");
 				return (1);
 			}
 			else
