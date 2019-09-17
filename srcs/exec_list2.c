@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/29 21:00:14 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/09 10:43:39 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/17 18:27:41 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@ char	*ft_set_var_ex_lst(int *j, int *l)
 	
 //	*i = ft_get_ind_env("PATH", g_envi->env);
 	ret = ft_get_env("PATH");
-	*j = 5;
+	*j = 0; 
+//	5;
 	*l = 0;
 	return (ret);
 }

@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/16 22:02:05 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/17 17:28:44 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,9 @@ char	*ft_get_parm_simple(char *s, int *k, int i)
 	tmp[i - 2] = '\0';
 	i = i + 1;
 	len = 0;
-	if ((val = ft_get_env(tmp)))
-		len = ft_strlen(val);
+	if (!(val = ft_get_env(tmp)))
+		val = ft_strdup("");
+	len = ft_strlen(val);
 	free(tmp);
 /*	tmp = ft_alloc_char(ft_strlen(s) + len - (i - 1) + 1);
 	tmp[0] = '\0';
@@ -64,8 +65,8 @@ char	*ft_get_parm_simple(char *s, int *k, int i)
 	if (len > 0 && ((tmp = ft_strcat(tmp, val))))
 		free(val);
 	tmp = ft_strcat(tmp, s + *k + i);*/
-	if (len == 0)
-		(*k)--;
+//	if (len == 0 && (*k) > 0)
+//		(*k)--;
 //	return (tmp);
 	return (val);
 }

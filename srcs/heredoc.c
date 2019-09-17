@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/02 22:03:52 by thaley            #+#    #+#             */
-/*   Updated: 2019/09/12 12:02:39 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/17 22:14:09 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,16 +81,21 @@ t_cmdlist		*ft_local_assig(t_cmdlist *cur_cmd)
 			if ((tmp = ft_strchr(cur_cmd->avcmd[i], '=')) &&
 				((j = tmp - cur_cmd->avcmd[i] - 1) > -1))
 			{
-				while ((j >= 0) && (cur_cmd->avcmd[i][j]))
+				if (ft_strncmp(tmp, "PATH", j) == 0)
+					ft_go_export(cur_cmd->avcmd[i], 0);
+				else
 				{
-					if (j == 0 && (ft_isalpha(cur_cmd->avcmd[i][j]) ||
-						 (cur_cmd->avcmd[i][j] == '_')))
-						cur_cmd->locals = ft_assig_add(cur_cmd, i);
-					else if (j > 0 && (!(ft_isalpha(cur_cmd->avcmd[i][j])))
-					&& (!(ft_isdigit(cur_cmd->avcmd[i][j])))
-					&& (!(cur_cmd->avcmd[i][j] == '_')))
-						return (cur_cmd);
-					j--;
+					while ((j >= 0) && (cur_cmd->avcmd[i][j]))
+					{
+						if (j == 0 && (ft_isalpha(cur_cmd->avcmd[i][j]) ||
+							 (cur_cmd->avcmd[i][j] == '_')))
+							cur_cmd->locals = ft_assig_add(cur_cmd, i);
+						else if (j > 0 && (!(ft_isalpha(cur_cmd->avcmd[i][j])))
+						&& (!(ft_isdigit(cur_cmd->avcmd[i][j])))
+						&& (!(cur_cmd->avcmd[i][j] == '_')))
+							return (cur_cmd);
+						j--;
+					}
 				}
 				i++;
 			}

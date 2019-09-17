@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/25 16:17:45 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/13 19:05:24 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/17 17:09:40 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,8 @@ void	ft_parse_line(char *str)
 	ft_init_parse_int(&i, &i_cmd, &qflag);
 	while (str && str[i + i_cmd])
 	{
+		if (i == 0)
+			g_job = ft_test_job(str + i_cmd);
 		if (qflag == 0 && str[i + i_cmd] == '"')
 			qflag = 1;
 		else if ((qflag == 1 && str[i + i_cmd] == '"') ||
