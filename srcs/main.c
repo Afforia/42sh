@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 10:27:38 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/13 19:08:26 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/18 20:16:02 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,8 @@ void		ft_final_free(void)
 	g_cmd->cmd_list = ft_free_char_matr(g_cmd->cmd_list);
 	free(g_cmd);
 	g_shell = ft_free_char_matr(g_shell);
+	if (g_subshell == 1)
+		return ;
 	i = get_next_line(-7, NULL);
 	ft_history_put();
 }
@@ -97,8 +99,9 @@ int			main(int argc, char **argv, char **environ)
 {
 	char	*line_read;
 	char	*pr;
+	char	**lr;
+	int		fd;
 
-	(void)argc;
 	if (!(g_cmd = malloc(sizeof(t_cmd))))
 		exit_shell();
 	if (!(g_envi = malloc(sizeof(t_env))))
@@ -108,7 +111,7 @@ int			main(int argc, char **argv, char **environ)
 	ft_init_glvar(argv);
 	g_envi->first_list = ft_create_exe_list();
 	g_cmd->jmp_code = setjmp(g_cmd->ebuf);
-	while (1)
+	while (g_subshell == 0 && argc == 1)
 	{
 		signal(SIGINT, ft_signal_handler_rl);
 		if (g_check == 1)
@@ -116,6 +119,28 @@ int			main(int argc, char **argv, char **environ)
 		pr = ft_get_name();
 		line_read = rl_gets(pr);
 		ft_parse_line(line_read);
+		free(line_read);
 	}
+	g_subshell = 1;
+	fd = STDIN_FILENO;
+	if (argc > 1 && argv[1] && argv[1][0] != '<')
+	{
+		pr = ft_calc_full_path(ft_strdup(argv[1]));
+		if (ft_check_file(pr, R_OK) != 0 || ((fd = open(pr, O_RDONLY)) < 0))
+		{
+			free(pr);
+			ft_final_free();
+			return (1);
+		}
+		free(pr);
+	}
+	line_read = NULL;
+	lr = &line_read;
+	while (get_next_line(fd, lr))
+	{
+		ft_parse_line(line_read);
+		free(line_read);
+	}
+	ft_final_free();
 	return (0);
 }

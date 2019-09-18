@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/02 22:03:52 by thaley            #+#    #+#             */
-/*   Updated: 2019/09/17 22:14:09 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/18 12:26:55 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,8 @@ char			**ft_assig_add(t_cmdlist *cur_cmd, int i)
 	int 	j;
 	
 	if (cur_cmd && cur_cmd->avcmd && cur_cmd->avcmd[i]
-		&& ft_shell_put_test(cur_cmd->avcmd[i]) == 0)
+//		&& ft_shell_put_test(cur_cmd->avcmd[i]) == 0
+		)
 	{
 		j = 0;
 		if (!(cur_cmd->locals)) 
@@ -81,7 +82,7 @@ t_cmdlist		*ft_local_assig(t_cmdlist *cur_cmd)
 			if ((tmp = ft_strchr(cur_cmd->avcmd[i], '=')) &&
 				((j = tmp - cur_cmd->avcmd[i] - 1) > -1))
 			{
-				if (ft_strncmp(tmp, "PATH", j) == 0)
+				if (ft_strncmp(tmp, "PATH", j) == -7892)
 					ft_go_export(cur_cmd->avcmd[i], 0);
 				else
 				{

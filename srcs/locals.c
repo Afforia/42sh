@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/13 19:07:57 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/18 20:21:26 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ char	**ft_init_shell(void)
 void	ft_init_glvar(char **av)
 {
 	g_app_name = ft_get_app_name(av[0]);
+	g_app_full_name = av[0];
 	g_check = 0;
 	g_color = 1;
 	g_shell = NULL;
@@ -46,7 +47,7 @@ void	ft_init_glvar(char **av)
 	g_jobs = NULL;
 	g_job = 0;
 	g_envi->hash_first = NULL;
-	
+	g_subshell = 1 - isatty(STDIN_FILENO);
 }
 
 int		ft_exit(char **av)

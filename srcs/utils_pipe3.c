@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/07 10:50:36 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/12 21:50:26 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/18 15:06:51 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ int		fd_set_nopipe(t_pipe *p_head)
 			exit(1);
 	}
 	ft_set_shell("_", p_head->cur_cmd->avcmd[0]);
-	if (ft_built_in(p_head->cur_cmd->avcmd[0], p_head->cur_cmd->avcmd) == 1)
+	if (ft_built_in(p_head->cur_cmd->avcmd[0], p_head->cur_cmd->avcmd, p_head->cur_cmd->locals) == 1)
 	{
 		p_head->cur_cmd = ft_redir_io_restore(p_head->cur_cmd);
 		return (-1);

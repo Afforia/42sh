@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/13 11:17:05 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/09 10:40:08 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/18 20:07:04 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ void	ft_merge_sort(t_listf **headref)
 	*headref = ft_lst_sort_merge(a, b);
 }
 
-int		ft_check_file(char *find_path)
+int		ft_check_file(char *find_path, int type)
 {
 	if (!(find_path))
 		return (-1);
@@ -115,7 +115,7 @@ int		ft_check_file(char *find_path)
 		ft_set_shell("?", "1");
 		return (-1);
 	}
-	else if ((access(find_path, X_OK)) == -1)
+	else if ((access(find_path, type)) == -1)
 	{
 		ft_putstr_fd(g_app_name, 2);
 		ft_putstr(" : permission denied: ");

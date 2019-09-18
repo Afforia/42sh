@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 14:10:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/16 14:15:17 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/18 15:08:34 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,14 +37,14 @@ char		*ft_get_p_dir(char *path)
 	return (path);
 }
 
-void		ft_cd(char *path2, int flag)
+void		ft_cd(char *path2, int flag, char **locals)
 {
 	char *tmp;
 	char *full;
 	char *p;
 
 	p = ft_strdup(path2);
-	if (!(tmp = ft_get_env("PWD")))
+	if (!((tmp = ft_get_env2("HOME", locals))) || !((tmp = ft_get_env("HOME"))))
 	{
 		if (!(tmp = ft_strnew(255)))
 			exit_shell(1);
@@ -89,17 +89,27 @@ int			ft_cd_flag(char *str, int *flag)
 	return (0);
 }
 
-char		*ft_cd_setpath(char *str)
+char		*ft_cd_setpath(char *str, char **locals)
 {
+	char	*tmp;
+
 	if (!(str) || (str && ft_strequ(str, "+")))
+	{
+		if ((tmp = ft_get_env2("HOME", locals)))
+			return (tmp);
 		return (ft_get_env("HOME"));
+	}
 	else if (str && (ft_strequ(str, "-")))
+	{
+		if ((tmp = ft_get_env2("OLDPWD", locals)))
+			return (tmp);
 		return (ft_get_env("OLDPWD"));
+	}
 	else
 		return (ft_strdup(str));
 }
 
-int			ft_built_cd(char **av)
+int			ft_built_cd(char **av, char **locals)
 {
 	char	*s;
 	int		i;
@@ -123,8 +133,8 @@ int			ft_built_cd(char **av)
 				break ;
 		}
 	}
-	s = ft_cd_setpath(av[i]);
-	ft_cd(s, flag);
+	s = ft_cd_setpath(av[i], locals);
+	ft_cd(s, flag, locals);
 	if (s)
 		free(s);
 	return (1);

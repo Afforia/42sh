@@ -3,27 +3,30 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
+/*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/04/16 08:59:01 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/18 18:49:30 by wveta            ###   ########.fr       */
+/*   Created: 2019/01/25 13:44:26 by thaley            #+#    #+#             */
+/*   Updated: 2019/08/13 21:15:40 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
+
 # include "../libft/libft.h"
-# include <sys/types.h>
-# include <sys/uio.h>
+# include <string.h>
+# include <unistd.h>
+# include <stdlib.h>
 # include <fcntl.h>
 
-# define BUFF_SIZE 1000
+# define BUFF_SIZE 20
 
-typedef struct	s_block
+typedef struct	s_gnlist
 {
-	t_list		**hd;
-	t_list		*bl;
-}				t_block;
+	char			*content;
+	int				content_size;
+	struct s_gnlist	*next;
+}				t_gnlist;
 
 int				get_next_line(const int fd, char **line);
 

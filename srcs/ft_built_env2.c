@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/27 18:24:59 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/11 19:39:59 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/18 12:33:54 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,8 @@ void	ft_exp_env(char *parm, char *value)
 		g_envi->env = ft_add_shell(str, g_envi->env);
 	else
 	{
-		free(g_shell[i]);
-		g_shell[i] = str;
+		free(g_envi->env[i]);
+		g_envi->env[i] = str;
 	}
 }
 

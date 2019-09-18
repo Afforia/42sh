@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/29 21:00:14 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/17 18:27:41 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/18 20:07:04 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int		ft_test_cmd_file(t_cmdlist *cur_cmd)
 
 	if (!(cur_cmd->find_path))
 		return (-1);
-	if (ft_check_file(cur_cmd->find_path) != 0)
+	if (ft_check_file(cur_cmd->find_path, X_OK) != 0)
 		return (-1);
 	if ((k = stat(cur_cmd->find_path, &buff)) == 0 &&
 		(buff.st_mode & S_IFMT) == S_IFDIR)

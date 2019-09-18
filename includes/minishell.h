@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:01:23 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/17 16:51:13 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/18 21:20:01 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,10 @@ typedef struct			s_env
 
 typedef struct			s_job
 {
+	int					type_job;
 	char				*cmd;
+	int					num;
+	char				flag_plus;
 	pid_t				pgid;
 	int					status;
 	struct s_job		*next;
@@ -90,6 +93,7 @@ typedef struct			s_job
 
 t_env					*g_envi;
 char					*g_app_name;
+char					*g_app_full_name;
 pid_t					g_pidchild;
 int						g_level;
 int						g_check;
@@ -102,6 +106,9 @@ int						g_built_rc;
 int						g_subs_rc;
 t_job					*g_jobs;
 int						g_job;
+char					*g_job_start;
+int						g_job_end;
+int						g_subshell;
 
 typedef struct			s_cmd
 {
@@ -175,15 +182,15 @@ char					*commands_generator(const char *text, int state);
 char					**commands_completion(const char *text, int start,
 						int end);
 void					ft_parse_line(char *str);
-void					ft_parse_cmd(char *str, int len);
+int						ft_parse_cmd(char *str, int len);
 void					ft_do_cmd_shell(char **av, int start, int flagpipe);
 char					*ft_get_file_path(char *path, t_listf *first_list);
-int						ft_built_in(char *path, char **av);
+int						ft_built_in(char *path, char **av, char **locals);
 void					ft_signal_handler(int signo);
 void					ft_signal_handler_rl(int signo);
 void					ft_main_signal_handler(int signo, char *line_read);
-int						ft_built_cd(char **av);
-void					ft_cd(char *path, int flag);
+int						ft_built_cd(char **av, char **locals);
+void					ft_cd(char *path, int flag, char **locals);
 char					*ft_get_env(char *parm);
 char					**ft_set_shell(char *parm, char *value);
 int						ft_unset_env(char **parm);
@@ -196,7 +203,7 @@ char					*ft_get_my_home(void);
 void					ft_get_cmd_matr(t_listf *lst);
 void					ft_free_list(void);
 void					ft_reset_cmd_list(void);
-int						ft_check_file(char *find_path);
+int						ft_check_file(char *find_path, int type);
 int						ft_check_dir(char *find_path);
 int						ft_is_dir(char *path);
 void					ft_print_msg(char *s, char *name);
@@ -337,6 +344,8 @@ int						ft_hash_usage(char *av);
 char					*ft_get_hash_path(char *path);
 int						ft_test_sub(char *str, int i);
 char					*ft_get_parm_simple(char *s, int *k, int i);
-int						ft_test_job(char *str);
+int						ft_test_job(char *str, int start);
+void					ft_exp_env(char *parm, char *value);
+void					ft_locals_to_env(char **locals);
 
 #endif
