@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/16 22:08:36 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/19 18:28:28 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ char	*ft_get_parm_qq(char *s)
 					ft_set_shell(tmp, val);
 				else if (s[j + 1] == '?' && val[0] == '\0')
 				{
-					if (g_level == 0)
+					if (g_subshell == 0)
 					{
 						g_subs_rc = 1;
 						ft_print_msg(": parameter null or not set: ", tmp);

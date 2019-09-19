@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:01:23 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/18 21:20:01 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/19 13:43:56 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,7 @@ int						g_job;
 char					*g_job_start;
 int						g_job_end;
 int						g_subshell;
+int						g_and_or_line;
 
 typedef struct			s_cmd
 {
@@ -206,7 +207,7 @@ void					ft_reset_cmd_list(void);
 int						ft_check_file(char *find_path, int type);
 int						ft_check_dir(char *find_path);
 int						ft_is_dir(char *path);
-void					ft_print_msg(char *s, char *name);
+int						ft_print_msg(char *s, char *name);
 void					ft_del_quotes(char **args);
 int						ft_len_list(t_listf	*lst);
 char					*ft_set_dirpath(int lpath, char *paths);
@@ -347,5 +348,6 @@ char					*ft_get_parm_simple(char *s, int *k, int i);
 int						ft_test_job(char *str, int start);
 void					ft_exp_env(char *parm, char *value);
 void					ft_locals_to_env(char **locals);
+char					*ft_get_shell_str(char *in, int len);
 
 #endif

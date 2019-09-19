@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/28 14:58:38 by wveta             #+#    #+#             */
-/*   Updated: 2019/08/29 21:03:43 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/19 17:34:15 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,9 @@ char	*ft_get_my_home(void)
 	uid = geteuid();
 	pw = getpwuid(uid);
 	if (pw)
+	{
 		home = ft_strdup(pw->pw_dir);
+	}
 	return (home);
 }
 

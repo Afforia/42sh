@@ -6,18 +6,19 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/28 14:58:38 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/16 14:15:04 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/19 11:34:08 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-void	ft_print_msg(char *s, char *name)
+int		ft_print_msg(char *s, char *name)
 {
 	ft_putstr_fd(g_app_name, 2);
 	ft_putstr_fd(s, 2);
 	ft_putstr_fd(name, 2);
 	ft_putstr_fd("\n", 2);
+	return (-1);
 }
 
 int		ft_is_dir(char *path)

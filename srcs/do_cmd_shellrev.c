@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/26 15:38:41 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/18 22:38:50 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/19 16:40:36 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,14 +84,6 @@ void		ft_do_cmd_list(t_pipe *p_head, int flpi)
 	ft_parent_wait(p_head, flpi, p_head->first_cmd);
 }
 
-int		ft_run_subshell(void)
-{
-	int i;
-
-	i = 1;
-	return (i);
-}
-
 void		ft_do_cmd_shell(char **av, int start, int flagpipe)
 {
 	int			nextpipe;
@@ -116,14 +108,7 @@ void		ft_do_cmd_shell(char **av, int start, int flagpipe)
 			break ;
 	}
 	if (fl == 1)
-	{
-		if (g_subshell == 0 && !(g_and_or))
-			ft_do_cmd_list(p_head, flagpipe);
-		else if (g_subshell == 0 && g_job && g_and_or)
-			ft_run_subshell();		
-		else if (g_subshell == 1)
-			ft_do_cmd_list(p_head, flagpipe);	
-	}
+		ft_do_cmd_list(p_head, flagpipe);	
 	p_head->first_cmd = ft_free_cmd_list(p_head->first_cmd);
 	free(p_head);
 }

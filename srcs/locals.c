@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/18 20:21:26 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/19 21:12:30 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void	ft_init_glvar(char **av)
 	g_shell = NULL;
 	g_shell = ft_init_shell();
 	g_and_or = 0;
+	g_and_or_line = 0;
 	g_not = 0;
 	g_rc = 0;
 	g_built_rc = 0;

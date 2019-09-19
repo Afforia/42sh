@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/25 16:17:45 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/18 21:20:01 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/19 21:12:26 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int	ft_parse_cmd(char *str, int len)
 {
 	char *cmd;
 	char **args;
-
+	
 	if  ((str) && ((str[0] == ';') || (str[0] == '&')))
 	{
 		ft_print_msg(": parse error near ", str);
@@ -51,10 +51,9 @@ int	ft_parse_cmd(char *str, int len)
 		exit_shell();
 	cmd = ft_strncpy(cmd, str, (size_t)len);
 	args = ft_split_pipes(cmd);
+
 	if (args && *args)
-	{
 		ft_do_cmd_shell(args, 0, ft_test_pipe(args, 0));
-	}
 	args = ft_free_char_matr(args);
 	free(cmd);
 	return (0);
@@ -67,6 +66,7 @@ void	ft_init_parse_int(int *i, int *i_cmd, int *qflag)
 	*qflag = 0;
 	g_job_start = NULL;
 	g_job_end = 0;
+	g_and_or_line = 0;
 }
 
 void	ft_parse_line(char *str)
@@ -74,20 +74,35 @@ void	ft_parse_line(char *str)
 	int i;
 	int i_cmd;
 	int qflag;
+	char *av;
 
 	ft_init_parse_int(&i, &i_cmd, &qflag);
+	av = NULL;
 	while (str && str[i + i_cmd])
 	{
-		if (i == 0)
-			g_job = ft_test_job(str, i_cmd);
-		if (qflag == 0 && str[i + i_cmd] == '"')
+		if (i == 0 && ((g_job = ft_test_job(str, i_cmd))) && g_and_or_line)
+		{
+			av = ft_get_shell_str(g_job_start, g_job_end);
+			if (ft_parse_cmd(av, ft_strlen(av)) == 1)
+			{
+				free(av);
+				return ;
+			}
+			free(av);
+			i_cmd = (g_job_start - str) + g_job_end + 1;
+			g_job_start = NULL;
+			g_job_end = 0;
+			g_job = 0;
+			i = -1;
+		}
+		else if (qflag == 0 && str[i + i_cmd] == '"')
 			qflag = 1;
 		else if ((qflag == 1 && str[i + i_cmd] == '"') ||
 			(qflag == 2 && str[i + i_cmd] == '\''))
 			qflag = 0;
 		else if (qflag == 0 && str[i + i_cmd] == '\'')
 			qflag = 2;
-		if (qflag == 0 && str[i + i_cmd] == ';' )
+		else if (qflag == 0 && str[i + i_cmd] == ';' )
 		{
 			if (ft_parse_cmd(str + i_cmd, i) == 1)
 				return ;
