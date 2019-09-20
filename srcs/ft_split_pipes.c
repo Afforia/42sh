@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/10 16:34:55 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/11 12:16:26 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/20 16:31:10 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,9 +77,9 @@ static int	ft_all_pipe_words(char **ret, char const *str)
 			(fl->qflag == 2 && str[fl->i] == '\''))
 			fl->qflag = 0;
 		else if (fl->qflag == 0 && str[fl->i] == '"')
-			ft_pipe_split_1(fl);
+			fl->qflag = 1;
 		else if (fl->qflag == 0 && str[fl->i] == '\'')
-			ft_pipe_split_2(fl);
+			fl->qflag = 2;
 	}
 	if (fl->flag == 1)
 		ft_get_word(ret, fl->count, fl->i - fl->start, str + fl->start);
@@ -101,7 +101,7 @@ char		**ft_split_pipes(char *s)
 	else
 	{
 		ret[count] = NULL;
-		if (ft_all_pipe_words(ret, s) == -1)
+		if (ft_all_pipe_words(ret, s) == -1 || ft_parse_pipe(ret))
 		{
 			ft_free_char_matr(ret);
 			return (NULL);

@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/07 10:50:36 by wveta             #+#    #+#             */
-/*   Updated: 2019/08/24 18:29:27 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/20 16:32:18 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,16 +22,6 @@ t_pipeflag	*ft_pipe_split_ini(void)
 	fl->flag = 0;
 	fl->qflag = 0;
 	return (fl);
-}
-
-void		ft_pipe_split_1(t_pipeflag *fl)
-{
-	fl->qflag = 1;
-}
-
-void		ft_pipe_split_2(t_pipeflag *fl)
-{
-	fl->qflag = 2;
 }
 
 void		ft_pipe_split_3(t_pipeflag *fl, char **ret, char const *str)

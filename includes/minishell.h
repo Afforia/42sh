@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:01:23 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/19 13:43:56 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/20 16:19:13 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -279,8 +279,6 @@ void					ft_init_curcmd(t_cmdlist *cur_cmd);
 void					ft_set_cmd(t_pipe *p_head);
 int						ft_test_cmd_pipe (char **av, int start, t_pipe *p);
 t_pipeflag				*ft_pipe_split_ini(void);
-void					ft_pipe_split_1(t_pipeflag *fl);
-void					ft_pipe_split_2(t_pipeflag *fl);
 void					ft_pipe_split_3(t_pipeflag *fl, char **ret,
 						char const *str);
 void					ft_pipe_split_4(t_pipeflag *fl, char **ret,
@@ -349,5 +347,8 @@ int						ft_test_job(char *str, int start);
 void					ft_exp_env(char *parm, char *value);
 void					ft_locals_to_env(char **locals);
 char					*ft_get_shell_str(char *in, int len);
+void				    ft_sig_set(void);
+int						ft_test_args(char *args);
+int						ft_parse_pipe(char **ret);
 
 #endif

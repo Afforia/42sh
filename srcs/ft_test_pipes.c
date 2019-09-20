@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/11 12:43:20 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/09 15:26:52 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/20 15:30:17 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,4 +89,30 @@ char	**ft_get_pipe_av(char **av, int start)
 		i++;
 	}
 	return (ret);
+}
+
+int		ft_test_args(char *args)
+{
+	int i;
+
+	i = 0;
+	if (args && args)
+	{
+		while (args[i])
+		{
+			if (ft_isspace(args[i]))
+				i++;
+			else if ((ft_strncmp(args + i, "|", 1) == 0 ||
+					ft_strncmp(args + i, "||", 2) == 0 ||
+					ft_strncmp(args + i, "&", 1) == 0 ||
+					ft_strncmp(args + i, "&&", 2) == 0))
+			{
+				ft_print_msg(": parse error near: ", args + i);
+				return (0);
+			}
+			else
+				return (1);
+		}
+	}
+	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/07 10:50:36 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/19 21:08:53 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/20 20:48:36 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,10 @@ void	ft_child_pipe_exec(t_cmdlist *cur_cmd, int flpi)
 	char *tmp;
 	
 	g_check = 1;
-	if (flpi > 0)
-		cur_cmd->avcmd = ft_cmd_replays(cur_cmd->avcmd);
+//	if (g_subshell > 0)
+//		g_subshell = 99;
+//	if (flpi > 0)
+//		cur_cmd->avcmd = ft_cmd_replays(cur_cmd->avcmd);
 	if (g_subs_rc == 1)
 		exit(1);
 	if (flpi > 0)
@@ -59,6 +61,7 @@ void	ft_child_pipe_exec(t_cmdlist *cur_cmd, int flpi)
 			exit(1);
 		if (ft_do_redir(cur_cmd) != 0)
 			exit(1);
+		cur_cmd->avcmd = ft_cmd_replays(cur_cmd->avcmd);
 		cur_cmd = ft_local_assig(cur_cmd);
 		if (!(cur_cmd->avcmd[0]))
 		{

@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 10:27:38 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/19 21:12:30 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/20 19:08:18 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ int			main(int argc, char **argv, char **environ)
 	g_cmd->jmp_code = setjmp(g_cmd->ebuf);
 	while (g_subshell == 0 && argc == 1)
 	{
-		signal(SIGINT, ft_signal_handler_rl);
+		ft_sig_set();
 		if (g_check == 1)
 			exit(0);
 		pr = ft_get_name();

@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/07 10:50:36 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/18 15:06:51 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/20 19:35:03 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,18 +102,29 @@ int		fd_set_nopipe(t_pipe *p_head)
 void	ft_parent_wait(t_pipe *p_head, int flpi, t_cmdlist *first_cmd)
 {
 	int		status;
-	int 	i;
+	int		flag;
+	char	*tmp;
 
 	if (flpi == 0)
 	{
-		waitpid(p_head->first_cmd->pid, &status, 0);
-		if (WIFEXITED(status))
+		flag = 0;
+		tmp = malloc(sizeof(char) * 1);
+		tmp[0] = '\0';
+		while (flag == 0)
 		{
-			if ((i = WEXITSTATUS(status)) != 0)
-				ft_set_shell("?", "1");
+			waitpid(p_head->first_cmd->pid, &status, 0);
+			if (WIFEXITED(status) 
+			&& (flag =1)
+			)
+				ft_set_shell("?", "0");
+			else if (WIFSTOPPED(status) && (flag = 1))
+				ft_set_shell("?", ft_putfnbr(WSTOPSIG(status), tmp));
+			else if (WIFSIGNALED(status) && (flag = 1))
+				ft_set_shell("?", ft_putfnbr(WTERMSIG(status), tmp));
 			else
-				ft_set_shell("?", "0");			
+				ft_set_shell("?", "1");			
 		}
+		free(tmp);
 		first_cmd = ft_redir_io_restore(first_cmd);
 		return ;
 	}

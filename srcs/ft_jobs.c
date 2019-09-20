@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/19 18:04:02 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/20 15:56:32 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,16 @@ int			ft_set_job_str(char *start, int end)
 	g_job_end = end;
 	start[end] = ';';
 	return (1);
+}
+
+int			ft_ampers_test(char *str, int i, int start)
+{
+	if (str[i + start] == '&' && str[i + start - 1] != '&' &&
+		str[i + start + 1] != '&' &&
+		(str[i + start - 1] != '<') && (str[i + start - 1] != '>') &&
+		(str[i + start + 1] != '<') && (str[i + start + 1] != '>'))
+		return (1);
+	return (0);
 }
 
 int			ft_test_job(char *str, int start)
@@ -41,8 +51,7 @@ int			ft_test_job(char *str, int start)
 			g_and_or_line = 1;
 		if (qflag == 0 && str[i + start] == ';')
 			return (0);
-		if (qflag == 0 && str[i + start] == '&' && str[i + start - 1] == ' ' &&
-			((str[i + start + 1] == '\0') || (str[i + start + 1] == ' ')))
+		if (qflag == 0 && ft_ampers_test(str, i, start) == 1)
 			return (ft_set_job_str(str + start, i));
 		i++;
 	}
