@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/26 15:38:41 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/19 16:40:36 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/23 20:32:54 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,8 @@ void		ft_do_cmd_list(t_pipe *p_head, int flpi)
 	int			fd1[2];
 
 	ft_init_arr_fd(2, fd0, fd1);
+	g_pipe = p_head;
+	g_flpi = flpi;
 	p_head->cur_cmd = p_head->first_cmd;
 	p_head->cur_cmd->avcmd = ft_isnot(p_head->cur_cmd->avcmd);
 	while (p_head->cur_cmd)
@@ -77,11 +79,13 @@ void		ft_do_cmd_list(t_pipe *p_head, int flpi)
 			ft_child_pipe_exec(p_head->cur_cmd, flpi);
 		else if (p_head->cur_cmd->pid > 0)
 		{
+			ft_if_job(p_head->cur_cmd, p_head->cur_cmd->pid);
 			ft_parent_pipe_next(p_head->cur_cmd, fd0, fd1, flpi);
 			p_head->cur_cmd = p_head->cur_cmd->next;
 		}
 	}
-	ft_parent_wait(p_head, flpi, p_head->first_cmd);
+	ft_parent_wait(p_head, flpi/*, p_head->first_cmd*/);
+	g_pipe = NULL;
 }
 
 void		ft_do_cmd_shell(char **av, int start, int flagpipe)

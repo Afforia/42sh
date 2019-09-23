@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 10:27:38 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/20 19:08:18 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/23 18:50:05 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ void		ft_final_free(void)
 	g_cmd->cmd_list = ft_free_char_matr(g_cmd->cmd_list);
 	free(g_cmd);
 	g_shell = ft_free_char_matr(g_shell);
+	free(g_app_full_name);
 	if (g_subshell == 1)
 		return ;
 	i = get_next_line(-7, NULL);

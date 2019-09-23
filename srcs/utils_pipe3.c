@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/07 10:50:36 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/20 19:35:03 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/23 19:00:04 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,13 +99,15 @@ int		fd_set_nopipe(t_pipe *p_head)
 	return (0);
 }
 
-void	ft_parent_wait(t_pipe *p_head, int flpi, t_cmdlist *first_cmd)
+void	ft_parent_wait(t_pipe *p_head, int flpi/*, t_cmdlist *first_cmd*/)
 {
-	int		status;
+/*	int		status;
 	int		flag;
-	char	*tmp;
+	char	*tmp;*/
 
-	if (flpi == 0)
+//	if (g_job == 1 && g_subshell == 0)
+//		return ;
+/*	if (flpi == 0)
 	{
 		flag = 0;
 		tmp = malloc(sizeof(char) * 1);
@@ -127,6 +129,6 @@ void	ft_parent_wait(t_pipe *p_head, int flpi, t_cmdlist *first_cmd)
 		free(tmp);
 		first_cmd = ft_redir_io_restore(first_cmd);
 		return ;
-	}
-	ft_pipe_wait_ch_fin(p_head->cur_cmd, p_head->first_cmd, p_head->last_cmd);
+	}*/
+	ft_pipe_wait_ch_fin(p_head->cur_cmd, p_head->first_cmd, p_head->last_cmd, flpi);
 }

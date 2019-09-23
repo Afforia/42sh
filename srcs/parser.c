@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/25 16:17:45 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/20 15:57:50 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/23 15:07:07 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ void	ft_init_parse_int(int *i, int *i_cmd, int *qflag)
 	g_job_start = NULL;
 	g_job_end = 0;
 	g_and_or_line = 0;
+	g_job = 0;
 }
 
 void	ft_parse_line(char *str)
@@ -104,19 +105,19 @@ void	ft_parse_line(char *str)
 			qflag = 0;
 		else if (qflag == 0 && str[i + i_cmd] == '\'')
 			qflag = 2;
-		else if (qflag == 0 && str[i + i_cmd] == ';' )
+		else if (qflag == 0 && (str[i + i_cmd] == ';'))
 		{
 			if (ft_parse_cmd(str + i_cmd, i) == 1)
 				return ;
 			i_cmd = i_cmd + i + 1;
-			i = 0;
+			i = -1;
 		}
 		else if (qflag == 0 && ft_strncmp(str + i + i_cmd, "&&", 2) ==0)
 		{
 			if (ft_parse_cmd(str + i_cmd, i) == 1)
 				return ;
 			i_cmd = i_cmd + i + 2;
-			i = 0;
+			i = 1;
 			g_and_or = 1;
 		}
 		else if (qflag == 0 && ft_strncmp(str + i + i_cmd, "||", 2) ==0)
@@ -124,9 +125,9 @@ void	ft_parse_line(char *str)
 			if (ft_parse_cmd(str + i_cmd, i) == 1)
 				return ;
 			i_cmd = i_cmd + i + 2;
-			i = 0;
+			i = 1 ;
 			g_and_or = 2;
-		}	
+		}
 		i++;
 	}
 	ft_parse_cmd(str + i_cmd, i);

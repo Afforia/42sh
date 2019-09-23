@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:01:23 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/20 16:19:13 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/23 20:32:25 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,14 +82,41 @@ typedef struct			s_env
 
 typedef struct			s_job
 {
-	int					type_job;
 	char				*cmd;
 	int					num;
-	char				flag_plus;
+	char				flag;
+	pid_t				pid;
+	pid_t				parent_pid;
 	pid_t				pgid;
 	int					status;
 	struct s_job		*next;
 }						t_job;
+
+typedef struct			s_cmdlist
+{
+	int					nr;
+	char				**avcmd;
+	char				*find_path;
+	int					built_in;
+	int					fd_pipe_in[2];
+	int					fd_pipe_out[2];
+	int					fd0;
+	int					fd1;
+	int					fd2;
+	pid_t				pid;
+	char				*here;
+	char				**locals;
+	int					flag_not;
+	int					andor;
+	int					child_pid;
+	struct s_cmdlist	*next;
+}						t_cmdlist;
+typedef struct			s_pipe
+{
+	t_cmdlist			*first_cmd;
+	t_cmdlist			*last_cmd;
+	t_cmdlist			*cur_cmd;
+}						t_pipe;
 
 t_env					*g_envi;
 char					*g_app_name;
@@ -104,12 +131,16 @@ int						g_not;
 int						g_rc;
 int						g_built_rc;
 int						g_subs_rc;
-t_job					*g_jobs;
+t_job					*g_job_first;
+t_job					*g_job_last;
 int						g_job;
 char					*g_job_start;
 int						g_job_end;
+pid_t					g_parent_pid;
 int						g_subshell;
 int						g_and_or_line;
+t_pipe					*g_pipe;
+int						g_flpi;
 
 typedef struct			s_cmd
 {
@@ -124,31 +155,6 @@ typedef struct			s_cmd
 }						t_cmd;
 t_cmd					*g_cmd;
 
-typedef struct			s_cmdlist
-{
-	int					nr;
-	char				**avcmd;
-	char				*find_path;
-	int					built_in;
-	int					child_pid;
-	int					fd_pipe_in[2];
-	int					fd_pipe_out[2];
-	int					fd0;
-	int					fd1;
-	int					fd2;
-	pid_t				pid;
-	char				*here;
-	char				**locals;
-	int					flag_not;
-	int					andor;
-	struct s_cmdlist	*next;
-}						t_cmdlist;
-typedef struct			s_pipe
-{
-	t_cmdlist			*first_cmd;
-	t_cmdlist			*last_cmd;
-	t_cmdlist			*cur_cmd;
-}						t_pipe;
 typedef struct			s_pipeflag
 {
 	int					flag;
@@ -264,7 +270,7 @@ void					ft_parent_pipe_next(t_cmdlist *cur_cmd, int fd0[2],
 						int fd1[2], int flpi);
 void					ft_child_pipe_exec(t_cmdlist *cur_cmd, int flpi);
 void					ft_pipe_wait_ch_fin(t_cmdlist *cur_cmd,
-						t_cmdlist *first_cmd, t_cmdlist *last_cmd);
+						t_cmdlist *first_cmd, t_cmdlist *last_cmd, int flpi);
 t_pipe					*ft_init_p_head(t_cmdlist *first_cmd,
 						t_cmdlist *last_cmd);
 int						ft_set_fd_pipes(t_pipe	*p_head, int fd0[2],
@@ -272,8 +278,8 @@ int						ft_set_fd_pipes(t_pipe	*p_head, int fd0[2],
 int						ft_set_fd_pipes_2(t_pipe *p_head, int fd0[2],
 						int fd1[2]);
 int						fd_set_nopipe(t_pipe *p_head);
-void					ft_parent_wait(t_pipe *p_head, int flpi,
-						t_cmdlist *first_cmd);
+void					ft_parent_wait(t_pipe *p_head, int flpi/*,
+						t_cmdlist *first_cmd*/);
 int						ft_fork(t_pipe *p_head);
 void					ft_init_curcmd(t_cmdlist *cur_cmd);
 void					ft_set_cmd(t_pipe *p_head);
@@ -350,5 +356,10 @@ char					*ft_get_shell_str(char *in, int len);
 void				    ft_sig_set(void);
 int						ft_test_args(char *args);
 int						ft_parse_pipe(char **ret);
-
+int						ft_if_job(t_cmdlist *cur_cmd, pid_t pid);
+void					ft_print_start_job(t_job *cur_job);
+void					ft_print_done_job(t_job *cur_job);
+void					ft_del_job(t_job *cur, t_job *prev);
+void					ft_print_job_term(t_job *cur_job);
+void					ft_print_job_stop(t_job *cur_job);
 #endif

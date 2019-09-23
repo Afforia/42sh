@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/19 21:12:30 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/23 18:51:14 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@ char	**ft_init_shell(void)
 
 void	ft_init_glvar(char **av)
 {
-	g_app_name = ft_get_app_name(av[0]);
-	g_app_full_name = av[0];
 	g_check = 0;
 	g_color = 1;
 	g_shell = NULL;
@@ -45,10 +43,21 @@ void	ft_init_glvar(char **av)
 	g_not = 0;
 	g_rc = 0;
 	g_built_rc = 0;
-	g_jobs = NULL;
+	g_job_first = NULL;
+	g_job_last = NULL;
 	g_job = 0;
 	g_envi->hash_first = NULL;
 	g_subshell = 1 - isatty(STDIN_FILENO);
+	g_parent_pid = getpid();
+	g_app_name = ft_get_app_name(av[0]);
+	if ((av[0][0] == '.') || (ft_check_file(av[0], X_OK) == -1))
+	{
+		g_app_full_name = ft_get_env("PWD");
+		g_app_full_name = ft_strfjoin(g_app_full_name,"/");
+		g_app_full_name = ft_strfjoin(g_app_full_name, g_app_name);
+	}
+	else
+		g_app_full_name = ft_strdup(av[0]);
 }
 
 int		ft_exit(char **av)
