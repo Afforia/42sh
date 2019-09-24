@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:32:55 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/23 22:06:45 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/24 19:56:58 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ void	ft_signal_handler_rl(int signo)
 	ft_sig_set();
 	if (signo == SIGCHLD)
 	{
-		pid = waitpid( -1 ,&status, WNOHANG | WUNTRACED);
-		if ((cur = g_job_first))
+		pid = waitpid(-1, &status, WNOHANG | WUNTRACED);
+		if (g_job_first && ((cur = g_job_first)))
 		{
 			prev = NULL;
 			while (cur)
@@ -35,29 +35,34 @@ void	ft_signal_handler_rl(int signo)
 					if (WIFEXITED(status))
 					{
 						ft_print_done_job(cur);
-						ft_del_job(cur, prev);
+						cur = ft_del_job(cur);
 						ft_set_shell("?", "0");
 					}
 					else if (WIFSTOPPED(status))
 					{
 						ft_print_job_stop(cur);
 						s = ft_strdup("");
-						ft_set_shell("?", ft_putfnbr(WSTOPSIG(status), s));
+						ft_set_shell("?", "1");
+						//ft_putfnbr(WSTOPSIG(status), s));
 						free(s);
 					}
 					else if (WIFSIGNALED(status))
 					{
-						ft_print_job_term(cur);
-						ft_del_job(cur, prev);
+//						ft_print_job_term(cur);
+						cur = ft_del_job(cur);
 						s = ft_strdup("");
-						ft_set_shell("?", ft_putfnbr(WTERMSIG(status), s));
+						ft_set_shell("?", "1");
+						//ft_putfnbr(WTERMSIG(status), s));
 						free(s);
 					}
 					else
 						ft_set_shell("?", "1");
 				}
-				prev = cur;
-				cur = cur->next;
+				if (cur)
+				{
+					prev = cur;
+					cur = prev->next;
+				}
 			}
 		}
 		if (g_pipe)

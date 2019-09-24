@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/20 15:56:32 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/24 19:56:58 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int			ft_set_job_str(char *start, int end)
 {
 	g_job_start = start;
 	g_job_end = end;
-	start[end] = ';';
+//	start[end] = ';';
 	return (1);
 }
 
@@ -49,7 +49,7 @@ int			ft_test_job(char *str, int start)
 		else if (qflag == 0 && ((ft_strncmp(str + i + start, "&&", 2) == 0)
 		|| (ft_strncmp(str + i + start, "||", 2) == 0)))
 			g_and_or_line = 1;
-		if (qflag == 0 && str[i + start] == ';')
+		if (qflag == 0 && (str[i + start] == ';'))
 			return (0);
 		if (qflag == 0 && ft_ampers_test(str, i, start) == 1)
 			return (ft_set_job_str(str + start, i));
@@ -103,6 +103,22 @@ char		*ft_get_shell_str(char *in, int len)
 	char	*tmp;
 
 	ret = NULL;
+
+/*	if ((tmp = malloc(sizeof(char) * (len + 1))))
+	{
+		tmp[0] = '\0';
+		tmp = ft_strncpy(tmp, in, len);
+		ret = ft_strdup("");
+		ret = ft_strfjoin(ret, g_app_full_name);
+		ret = ft_strfjoin(ret, " '");
+		ret = ft_strfjoin(ret, "'");
+		ret = ft_strfjoin(ret, tmp);
+		ret = ft_strfjoin(ret, "'");
+		ret = ft_strfjoin(ret, "'");
+		free(tmp);
+	}
+	return (ret);
+*/
 	if ((tmp = malloc(sizeof(char) * (len + 1))))
 	{
 		tmp[0] = '\0';

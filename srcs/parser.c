@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/25 16:17:45 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/23 15:07:07 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/24 18:52:57 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ int	ft_parse_cmd(char *str, int len)
 		return (0);
 	if (!(cmd = ft_strnew((size_t)len)))
 		exit_shell();
+	if (!(g_job && g_and_or_line))
+		ft_set_job_str(str, len);
 	cmd = ft_strncpy(cmd, str, (size_t)len);
 	args = ft_split_pipes(cmd);
 
@@ -105,7 +107,9 @@ void	ft_parse_line(char *str)
 			qflag = 0;
 		else if (qflag == 0 && str[i + i_cmd] == '\'')
 			qflag = 2;
-		else if (qflag == 0 && (str[i + i_cmd] == ';'))
+		else if (qflag == 0 && (str[i + i_cmd] == ';' || 
+		(str[i + i_cmd] == '&' && str[i + i_cmd + 1] != '&'
+		&& str[i + i_cmd - 1] != '&')))
 		{
 			if (ft_parse_cmd(str + i_cmd, i) == 1)
 				return ;

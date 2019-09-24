@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 10:27:38 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/23 18:50:05 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/24 19:56:58 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,8 @@ int			main(int argc, char **argv, char **environ)
 	lr = &line_read;
 	while (get_next_line(fd, lr))
 	{
-			ft_parse_line(line_read);
+		ft_sig_set();
+		ft_parse_line(line_read);
 		free(line_read);
 	}
 	ft_final_free();
