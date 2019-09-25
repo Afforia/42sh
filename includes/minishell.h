@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:01:23 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/24 17:00:02 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/25 20:37:56 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,17 @@
 # define LESSGREAT	"<>"
 # define UPR0		"0      abtnvfr            e"
 
+typedef struct 			s_proc
+{
+	struct s_proc		*next;       
+  	char				**argv;
+	pid_t				pid;
+	pid_t				pgid;
+	char				completed;
+	char				stopped;
+	int					status;
+}						t_proc;
+
 typedef struct			s_listf
 {
 	char				*path;
@@ -83,13 +94,10 @@ typedef struct			s_env
 typedef struct			s_job
 {
 	char				*orig_cmd;
-	char				*cmd;
 	int					num;
 	char				flag;
-	pid_t				pid;
-	pid_t				parent_pid;
 	pid_t				pgid;
-	int					status;
+	t_proc				*first_proc;
 	struct s_job		*next;
 }						t_job;
 
@@ -361,12 +369,14 @@ char					*ft_get_shell_str(char *in, int len);
 void				    ft_sig_set(void);
 int						ft_test_args(char *args);
 int						ft_parse_pipe(char **ret);
-int						ft_if_job(t_cmdlist *cur_cmd, pid_t pid);
+int						ft_if_job(t_cmdlist *cur_cmd);
 void					ft_print_start_job(t_job *cur_job);
 void					ft_print_done_job(t_job *cur_job);
 t_job					*ft_del_job(t_job *del);
 void					ft_print_job_term(t_job *cur_job);
 void					ft_print_job_stop(t_job *cur_job);
 int						ft_set_job_str(char *start, int end);
+void					ft_add_proc(t_cmdlist *cur_cmd);
+char					*ft_print_job_pref(t_job *cur_job);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/07 10:50:36 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/24 17:05:06 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/25 15:31:00 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,14 +47,17 @@ void	ft_child_pipe_exec(t_cmdlist *cur_cmd, int flpi)
 	char *tmp;
 	
 	g_check = 1;
-//	if (g_subshell > 0)
-//		g_subshell = 99;
-//	if (flpi > 0)
-//		cur_cmd->avcmd = ft_cmd_replays(cur_cmd->avcmd);
 	if (g_subs_rc == 1)
 		exit(1);
 	if (g_job == 1)
-		setpgrp();
+	{
+		if (g_pgid == 0)
+			g_pgid = cur_cmd->pid;
+		if (flpi == 0)
+			setpgrp();
+		else
+			setpgid(cur_cmd->pid, g_pgid);
+	}
 	if (flpi > 0)
 	{
 		ft_pipe_dup_ch_in(cur_cmd);
@@ -106,14 +109,14 @@ void	ft_child_pipe_exec(t_cmdlist *cur_cmd, int flpi)
 	exit (1);
 }
 
-void	ft_pipe_wait_ch_fin(t_cmdlist *cur_cmd, t_cmdlist *first_cmd,
-	t_cmdlist *last_cmd, int flpi)
+void	ft_pipe_wait_ch_fin(t_cmdlist *cur_cmd, t_cmdlist *first_cmd, t_cmdlist *last_cmd, int flpi)
 {
 //	int			status;
 	int 		i;
 
 	while (1)
-	{	i = 0;
+	{	
+		i = 0;
 		cur_cmd = first_cmd;
 		while (cur_cmd)
 		{

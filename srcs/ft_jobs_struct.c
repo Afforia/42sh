@@ -6,57 +6,51 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/24 16:32:02 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/25 21:00:28 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-void	ft_print_start_job(t_job *cur_job)
+int		ft_set_job_fl(char *flag)
 {
-	ft_putstr("[");
-	ft_putnbr(cur_job->num);
-	ft_putstr("] ");
-	ft_putnbr(cur_job->pid);
-	ft_putstr("\n");
+	if (*flag == '+')
+		*flag = '-';
+	else
+		*flag = ' ';
+	return (1);
 }
 
-void	ft_print_job_term(t_job *cur_job)
+void	ft_insert_job(t_job *cur_job)
 {
-	ft_putstr("\n[");
-	ft_putnbr(cur_job->num);
-	ft_putstr("]");
-	ft_putchar(cur_job->flag);
-	ft_putstr("   ");
-	ft_putnbr(cur_job->pid);
-	ft_putstr(" Terminated:            ");
-	ft_putstr(cur_job->cmd);
-	ft_putstr("\n");
+	t_job	*tmp;
+
+	tmp = g_job_first;
+	while (tmp && (ft_set_job_fl(&tmp->flag)))
+	{
+		if (tmp == g_job_first && tmp->num > 1)
+		{
+			cur_job->num = 1;
+			cur_job->next = tmp;
+			g_job_first = cur_job;
+		}
+		else if (tmp->next && tmp->num + 1 < tmp->next->num)
+		{
+			cur_job->num = tmp->num + 1;
+			cur_job->next = tmp->next;
+			tmp->next = cur_job;
+		}
+		else if (!(tmp->next) && tmp != cur_job)
+		{
+			tmp->next = cur_job;
+			cur_job->num = tmp->num + 1;
+		}
+		else
+			tmp = tmp->next;
+	}
 }
 
-void	ft_print_done_job(t_job *cur_job)
-{
-	ft_putstr("\n[");
-	ft_putnbr(cur_job->num);
-	ft_putstr("]");
-	ft_putchar(cur_job->flag);
-	ft_putstr("  Done                  ");
-	ft_putstr(cur_job->orig_cmd);
-	ft_putstr("\n");
-}
-
-void	ft_print_job_stop(t_job *cur_job)
-{
-	ft_putstr("\n[");
-	ft_putnbr(cur_job->num);
-	ft_putstr("]");
-	ft_putchar(cur_job->flag);
-	ft_putstr("  Stopped               ");
-	ft_putstr(cur_job->orig_cmd);
-	ft_putstr("\n");
-}
-
-t_job 	*ft_del_job(t_job *del)
+t_job	*ft_del_job(t_job *del)
 {
 	t_job	*prev;
 	t_job	*tmp;
@@ -74,8 +68,6 @@ t_job 	*ft_del_job(t_job *del)
 				g_job_first = del->next;
 				prev = g_job_first;
 			}
-			if (del->cmd)
-				free(del->cmd);
 			if (del->orig_cmd)
 				free(del->orig_cmd);
 			free(del);
@@ -88,73 +80,34 @@ t_job 	*ft_del_job(t_job *del)
 	return (prev);
 }
 
-int		ft_if_job(t_cmdlist *cur_cmd, pid_t pid)
+int		ft_if_job(t_cmdlist *cur_cmd)
 {
 	t_job	*cur_job;
-	t_job	*tmp;
-	int		i;
 
+	cur_job = NULL;
 	if (g_job == 1)
 	{
-		cur_job = malloc(sizeof(t_job));
-		cur_job->next = NULL;
-		cur_job->cmd = NULL;
-		cur_job->orig_cmd = NULL;
-		if (!(g_job_first))
+		if (cur_cmd->nr == 1)
 		{
-			g_job_first = cur_job;
-			cur_job->num = 1;
-		}
-		else
-		{
-			tmp = g_job_first;
-			while (tmp)
+			cur_job = malloc(sizeof(t_job));
+			cur_job->next = NULL;
+			cur_job->first_proc = NULL;
+			cur_job->orig_cmd = NULL;
+			if (g_pgid == 0)
+				g_pgid = cur_cmd->pid;
+			cur_job->pgid = g_pgid;
+			if (!(g_job_first))
 			{
-				if (tmp->flag == '+')
-					tmp->flag = '-';
-				else
-					tmp->flag = ' ';
-				if (tmp == g_job_first && tmp->num > 1)
-				{
-					cur_job->num = 1;
-					cur_job->next = tmp;
-					g_job_first = cur_job;
-					break ;
-				}
-				else if (tmp->next && tmp->num + 1 < tmp->next->num)
-				{
-					cur_job->num = tmp->num + 1;
-					cur_job->next = tmp->next;
-					tmp->next = cur_job;
-					break ;
-				}
-				else if (!(tmp->next) && tmp != cur_job)
-				{
-					tmp->next = cur_job;
-					cur_job->num = tmp->num + 1;
-					break ;
-				}
-				tmp = tmp->next;
+				g_job_first = cur_job;
+				cur_job->num = 1;
 			}
+			else
+				ft_insert_job(cur_job);
+			cur_job->orig_cmd = ft_strncpy(ft_strnew((size_t)
+			(g_job_end + 1)), g_job_start, g_job_end);
+			ft_print_start_job(cur_job);
 		}
-		cur_job->flag = '+';
-		cur_job->pid = pid;
-		cur_job->parent_pid = g_parent_pid;
-		cur_job->status = 0;
-		cur_job->cmd = ft_strdup("");
-		i = 0;
-		while (cur_cmd->avcmd[i])
-		{
-			cur_job->cmd = ft_strfjoin(cur_job->cmd, cur_cmd->avcmd[i]);
-			cur_job->cmd = ft_strfjoin(cur_job->cmd, " ");
-			i++;
-		}
-		if (cur_cmd->nr == 1 &&
-			((cur_job->orig_cmd = ft_strnew((size_t)(g_job_end + 1)))))
-			cur_job->orig_cmd = ft_strncpy(cur_job->orig_cmd, g_job_start, g_job_end);
-		else
-			cur_job->orig_cmd = ft_strdup(cur_job->cmd);
-		ft_print_start_job(cur_job);
+		ft_add_proc(cur_cmd);
 	}
 	return (1);
 }
