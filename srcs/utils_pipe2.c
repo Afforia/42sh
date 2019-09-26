@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/07 10:50:36 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/25 15:31:00 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/26 19:27:34 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ void	ft_pipe_wait_ch_fin(t_cmdlist *cur_cmd, t_cmdlist *first_cmd, t_cmdlist *la
 //	int			status;
 	int 		i;
 
-	while (1)
+	while (g_job == 0)
 	{	
 		i = 0;
 		cur_cmd = first_cmd;
@@ -122,18 +122,6 @@ void	ft_pipe_wait_ch_fin(t_cmdlist *cur_cmd, t_cmdlist *first_cmd, t_cmdlist *la
 		{
 			if (cur_cmd->pid != 0)
 			{
-//				status = 0;
-//				if (cur_cmd->pid == waitpid(cur_cmd->pid, &status, 0))
-//				{
-//					if ((!(cur_cmd->next)) && (WIFEXITED(status)))
-//					{
-//						if ((i = WEXITSTATUS(status)) != 0)
-//							ft_set_shell("?", "1");
-//						else
-//							ft_set_shell("?", "0");			
-//					}
-//					cur_cmd->pid = 0;
-//				}
 				i++;
 			}
 			cur_cmd = cur_cmd->next;

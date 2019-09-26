@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/25 20:52:27 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/26 23:14:55 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void	ft_print_job_term(t_job *cur_job)
 		num = ft_num_to_str(cur_job->pgid);
 		tmp = ft_strfjoin(tmp, num);
 		free(num);
-		tmp = ft_strfjoin(tmp, " Terminated:            ");
+		tmp = ft_strfjoin(tmp, "Terminated:            ");
 		tmp = ft_strfjoin(tmp, cur_job->orig_cmd);
 		tmp = ft_strfjoin(tmp, "\n");
 		ft_putstr(tmp);
@@ -82,9 +82,9 @@ void	ft_print_done_job(t_job *cur_job)
 {
 	char	*tmp;
 
-	if ((tmp = ft_print_job_pref(cur_job)))
+	if (cur_job && ((cur_job->flag = ' ')) && (tmp = ft_print_job_pref(cur_job)))
 	{
-		tmp = ft_strfjoin(tmp, "  Done                  ");
+		tmp = ft_strfjoin(tmp, "Done                   ");
 		tmp = ft_strfjoin(tmp, cur_job->orig_cmd);
 		tmp = ft_strfjoin(tmp, "\n");
 		ft_putstr(tmp);

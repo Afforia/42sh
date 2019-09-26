@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/25 21:00:28 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/26 23:14:55 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,10 @@ void	ft_insert_job(t_job *cur_job)
 	t_job	*tmp;
 
 	tmp = g_job_first;
-	while (tmp && (ft_set_job_fl(&tmp->flag)))
+	while (tmp)
 	{
+		if (tmp != cur_job && cur_job->num == 0)
+			ft_set_job_fl(&tmp->flag);
 		if (tmp == g_job_first && tmp->num > 1)
 		{
 			cur_job->num = 1;
@@ -70,6 +72,8 @@ t_job	*ft_del_job(t_job *del)
 			}
 			if (del->orig_cmd)
 				free(del->orig_cmd);
+			if (del->first_proc)
+				ft_del_proc_list(del->first_proc);
 			free(del);
 			break ;
 		}
@@ -90,12 +94,17 @@ int		ft_if_job(t_cmdlist *cur_cmd)
 		if (cur_cmd->nr == 1)
 		{
 			cur_job = malloc(sizeof(t_job));
+			cur_job->stat_job = ft_strdup("Running               ");
+			cur_job->ind = g_job_ind;
+			g_job_ind++;
 			cur_job->next = NULL;
 			cur_job->first_proc = NULL;
 			cur_job->orig_cmd = NULL;
+			cur_job->flag = '+';
 			if (g_pgid == 0)
 				g_pgid = cur_cmd->pid;
 			cur_job->pgid = g_pgid;
+			cur_job->ready = 0;
 			if (!(g_job_first))
 			{
 				g_job_first = cur_job;

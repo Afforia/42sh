@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/25 16:17:45 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/24 18:52:57 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/26 14:57:44 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ int	ft_parse_cmd(char *str, int len)
 		ft_do_cmd_shell(args, 0, ft_test_pipe(args, 0));
 	args = ft_free_char_matr(args);
 	free(cmd);
+	ft_print_jobs();
 	return (0);
 }
 
