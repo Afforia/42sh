@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/26 23:14:55 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/27 12:30:31 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,34 +60,32 @@ void	ft_print_start_job(t_job *cur_job)
 	}
 }
 
-void	ft_print_job_term(t_job *cur_job)
+void	ft_set_job_plus()
 {
-	char	*tmp;
-	char	*num;
+	int		last;
+	int		prev;
+	t_job	*job;
 
-	if ((tmp = ft_print_job_pref(cur_job)))
+	last = 0;
+	prev = 0;
+	job = g_job_first;
+	while (job)
 	{
-		num = ft_num_to_str(cur_job->pgid);
-		tmp = ft_strfjoin(tmp, num);
-		free(num);
-		tmp = ft_strfjoin(tmp, "Terminated:            ");
-		tmp = ft_strfjoin(tmp, cur_job->orig_cmd);
-		tmp = ft_strfjoin(tmp, "\n");
-		ft_putstr(tmp);
-		free(tmp);
+		if (job->ind > last)
+		{
+			prev = last;
+			last = job->ind;
+		}
+		job->flag = ' ';
+		job = job->next;
 	}
-}
-
-void	ft_print_done_job(t_job *cur_job)
-{
-	char	*tmp;
-
-	if (cur_job && ((cur_job->flag = ' ')) && (tmp = ft_print_job_pref(cur_job)))
+	job = g_job_first;
+	while (job)
 	{
-		tmp = ft_strfjoin(tmp, "Done                   ");
-		tmp = ft_strfjoin(tmp, cur_job->orig_cmd);
-		tmp = ft_strfjoin(tmp, "\n");
-		ft_putstr(tmp);
-		free(tmp);
+		if (job->ind == last)
+			job->flag = '+';
+		else if (job->ind == prev)
+			job->flag = '-';
+		job = job->next;
 	}
 }

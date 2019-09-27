@@ -6,20 +6,11 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/26 23:14:55 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/27 16:59:56 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-int		ft_set_job_fl(char *flag)
-{
-	if (*flag == '+')
-		*flag = '-';
-	else
-		*flag = ' ';
-	return (1);
-}
 
 void	ft_insert_job(t_job *cur_job)
 {
@@ -28,8 +19,6 @@ void	ft_insert_job(t_job *cur_job)
 	tmp = g_job_first;
 	while (tmp)
 	{
-		if (tmp != cur_job && cur_job->num == 0)
-			ft_set_job_fl(&tmp->flag);
 		if (tmp == g_job_first && tmp->num > 1)
 		{
 			cur_job->num = 1;
@@ -81,6 +70,7 @@ t_job	*ft_del_job(t_job *del)
 			prev = tmp;
 		tmp = tmp->next;
 	}
+	ft_set_job_plus();
 	return (prev);
 }
 
@@ -100,7 +90,7 @@ int		ft_if_job(t_cmdlist *cur_cmd)
 			cur_job->next = NULL;
 			cur_job->first_proc = NULL;
 			cur_job->orig_cmd = NULL;
-			cur_job->flag = '+';
+
 			if (g_pgid == 0)
 				g_pgid = cur_cmd->pid;
 			cur_job->pgid = g_pgid;
@@ -114,9 +104,12 @@ int		ft_if_job(t_cmdlist *cur_cmd)
 				ft_insert_job(cur_job);
 			cur_job->orig_cmd = ft_strncpy(ft_strnew((size_t)
 			(g_job_end + 1)), g_job_start, g_job_end);
+			ft_set_job_plus();
 			ft_print_start_job(cur_job);
 		}
 		ft_add_proc(cur_cmd);
 	}
+//	else
+//		tcsetpgrp(g_terminal, g_pgid);
 	return (1);
 }

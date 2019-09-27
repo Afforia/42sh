@@ -6,25 +6,12 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/26 23:07:55 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/27 14:23:43 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-void	ft_print_job_stop(t_job *cur_job)
-{
-	char	*tmp;
-
-	if ((tmp = ft_print_job_pref(cur_job)))
-	{
-		tmp = ft_strfjoin(tmp, "  Stopped               ");
-		tmp = ft_strfjoin(tmp, cur_job->orig_cmd);
-		tmp = ft_strfjoin(tmp, "\n");
-		ft_putstr(tmp);
-		free(tmp);
-	}
-}
 
 void	ft_print_jobs(void)
 {
@@ -94,7 +81,7 @@ void	ft_print_job_list(int i, int start, int fl, char **av)
 	{
 		while (av[start])
 		{
-			ft_print_if_job_(av[start], fl);
+			ft_print_if_job(av[start], fl);
 			start++;
 		}
 	}

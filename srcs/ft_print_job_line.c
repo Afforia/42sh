@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/26 22:57:59 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/27 14:28:00 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,9 @@ void	ft_print_job_line(t_job *job, int fl)
 		{
 			if (proc == job->first_proc)
 			{
-				tmp = ft_print_job_pref(job);
-				len = ft_strlen(tmp);
+				len= 0;
+				if ((tmp = ft_print_job_pref(job)))
+					len = ft_strlen(tmp);
 			}
 			else
 			{
@@ -45,25 +46,24 @@ void	ft_print_job_line(t_job *job, int fl)
 			tmp = ft_strfjoin(tmp, proc->argv[0]);
 			tmp = ft_strfjoin(tmp, "\n");
 			ft_putstr(tmp);
-			tmp[len] = '\0';
+			free(tmp);
 			proc = proc->next;
 		}
 	}
 	else
 	{
-//		num = ft_get_status_job(job, fl);
-//		tmp = ft_strfjoin(tmp, num);
-//		free(num);
-		tmp = ft_print_job_pref(job);
-		tmp = ft_strfjoin(tmp, job->stat_job);
-		tmp = ft_strfjoin(tmp, job->orig_cmd);
-		tmp = ft_strfjoin(tmp, "\n");
-		ft_putstr(tmp);
-		free(tmp);
+		if ((tmp = ft_print_job_pref(job)))
+		{
+			tmp = ft_strfjoin(tmp, job->stat_job);
+			tmp = ft_strfjoin(tmp, job->orig_cmd);
+			tmp = ft_strfjoin(tmp, "\n");
+			ft_putstr(tmp);
+			free(tmp);
+		}
 	}
 }
 
-void	ft_print_if_job_(char *str, int fl)
+void	ft_print_if_job(char *str, int fl)
 {
 	t_job	*job;
 

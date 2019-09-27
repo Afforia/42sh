@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/25 16:17:45 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/26 14:57:44 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/27 11:02:56 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,6 @@ int	ft_parse_cmd(char *str, int len)
 		ft_do_cmd_shell(args, 0, ft_test_pipe(args, 0));
 	args = ft_free_char_matr(args);
 	free(cmd);
-	ft_print_jobs();
 	return (0);
 }
 
@@ -109,8 +108,10 @@ void	ft_parse_line(char *str)
 		else if (qflag == 0 && str[i + i_cmd] == '\'')
 			qflag = 2;
 		else if (qflag == 0 && (str[i + i_cmd] == ';' || 
-		(str[i + i_cmd] == '&' && str[i + i_cmd + 1] != '&'
-		&& str[i + i_cmd - 1] != '&')))
+//		(str[i + i_cmd] == '&' && str[i + i_cmd + 1] != '&'
+//		&& str[i + i_cmd - 1] != '&')
+		ft_ampers_test(str, i, i_cmd) == 1
+		))
 		{
 			if (ft_parse_cmd(str + i_cmd, i) == 1)
 				return ;

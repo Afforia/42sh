@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:01:23 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/26 22:21:04 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/27 17:46:51 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -375,10 +375,7 @@ int						ft_test_args(char *args);
 int						ft_parse_pipe(char **ret);
 int						ft_if_job(t_cmdlist *cur_cmd);
 void					ft_print_start_job(t_job *cur_job);
-void					ft_print_done_job(t_job *cur_job);
 t_job					*ft_del_job(t_job *del);
-void					ft_print_job_term(t_job *cur_job);
-void					ft_print_job_stop(t_job *cur_job);
 int						ft_set_job_str(char *start, int end);
 void					ft_add_proc(t_cmdlist *cur_cmd);
 char					*ft_print_job_pref(t_job *cur_job);
@@ -387,8 +384,13 @@ void					ft_print_jobs(void);
 void					ft_del_proc_list(t_proc *proc);
 void					ft_print_job_list(int i, int start, int fl, char **av);
 void					ft_print_job_line(t_job *job, int fl);
-void					ft_print_if_job_(char *str, int fl);
+void					ft_print_if_job(char *str, int fl);
 int						ft_cmd_jobs(char **av);
 char					*ft_num_to_str(int i);
+int						ft_ampers_test(char *str, int i, int start);
+void					ft_set_job_plus(void);
+int						ft_cmd_bg(char **av);
+int						ft_cmd_fg(char **av);
+int						ft_cmd_kill(char **av);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/26 15:38:41 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/26 16:08:19 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/27 12:54:41 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,12 @@ int			ft_built_in(char *path, char **av, char **locals)
 		return (ft_cmd_hash(av));
 	else if (path && ft_strncmp(path, "jobs", 4) == 0)
 		return (ft_cmd_jobs(av));
+	else if (path && ft_strncmp(path, "fg", 2) == 0)
+		return (ft_cmd_fg(av));
+	else if (path && ft_strncmp(path, "bg", 2) == 0)
+		return (ft_cmd_bg(av));
+	else if (path && ft_strncmp(path, "kill", 4) == 0)
+		return (ft_cmd_kill(av));
 	return (0);
 }
 
