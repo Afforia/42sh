@@ -11,7 +11,7 @@ FILES	=	built_in exec_list ft_built_cd ft_built_env main parser\
 			ft_built_env4 ft_replays_subs hash_cmd hash_cmd_add\
 			ft_par_exp ft_jobs ft_signals ft_jobs_struct\
 			ft_job_print ft_job_print_next ft_job_proc ft_print_job_line\
-			buil_in_jobs
+			buil_in_jobs ft_signals_next buil_in_jobs_bg
 
 SRC_D	=	srcs
 INC_D	=	includes

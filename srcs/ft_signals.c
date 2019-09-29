@@ -6,95 +6,121 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:32:55 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/27 18:06:13 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/29 19:11:46 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
+char	*ft_add_strnum(char *str, int i)
+{
+	char	*tmp;
+
+	if (str)
+	{
+		tmp = ft_num_to_str(i);
+		str = ft_strfjoin(str, tmp);
+		free(tmp);
+	}
+	return (str);
+}
+
+int		ft_set_job_status(t_job *job, int n, int status)
+{
+	job->ready = 1;
+	free(job->stat_job);
+	if (n == 2)
+	{
+		job->stat_job = ft_strdup("Stopped  by ");
+		job->stat_job = ft_add_strnum(job->stat_job, WSTOPSIG(status));
+		job->stat_job = ft_strfjoin(job->stat_job, "           ");
+		job->ready = 2;
+	}
+	else if (n == 3)
+	{
+		job->stat_job = ft_strdup("Terminated by signal ");
+		job->stat_job = ft_add_strnum(job->stat_job, WTERMSIG(status));
+		job->stat_job = ft_strfjoin(job->stat_job, " ");
+		if (WTERMSIG(status) != 9)
+			job->ready = 2;
+	}
+	else if (n == 4)
+	{
+		job->stat_job = ft_strdup("Continued      ");
+		job->ready = 2;
+	}
+	else if (n == 1)
+	{
+		job->stat_job = ft_strdup("Done                     ");
+		job->stat_job = ft_add_strnum(job->stat_job, WEXITSTATUS(status));
+		job->stat_job = ft_strfjoin(job->stat_job, " ");
+	}
+	return (1);
+}
+
+int		ft_put_job_status(t_job *job, t_proc *proc, int status)
+{
+	if (WIFCONTINUED(status))
+	{
+		proc->stopped = 0;
+		return (ft_set_job_status(job, 4, status));
+	}
+	if (WIFSTOPPED(status))
+	{
+		proc->stopped = 1;
+		return (ft_set_job_status(job, 2, status));
+	}
+	if (WIFSIGNALED(status))
+	{
+		proc->completed = 1;
+		return (ft_set_job_status(job, 3, status));
+	}
+	if (WIFEXITED(status))
+	{
+		proc->completed = 1;
+		if (!(proc->next))
+			return (ft_set_job_status(job, 1, status));
+	}
+	return (0);
+}
+
+pid_t	ft_test_job_status(pid_t pid, int status)
+{
+	t_job		*job;
+	t_proc		*proc;
+
+	if (g_job_first && ((job = g_job_first)))
+	{
+		while (job)
+		{
+			proc = job->first_proc;
+			while (proc)
+			{
+				if (proc->pid == pid)
+				{
+					proc->status = status;
+					if (ft_put_job_status(job, proc, status))
+						return (proc->pgid);
+				}
+				proc = proc->next;
+			}
+			job = job->next;
+		}
+	}
+	return ((pid_t)NULL);
+}
+
 void	ft_signal_handler_rl(int signo)
 {
-	t_job		*cur;
-	t_proc		*proc;
-	t_cmdlist	*cur_cmd;
 	pid_t		pid;
 	int			status;
-	char		*tmp;
 
 	ft_sig_set();
-	if (signo == SIGCHLD || signo == SIGINT || signo == SIGTTIN ||
-		signo == SIGTTOU || signo == SIGTSTP || signo == SIGQUIT ||
-		signo == SIGTERM || signo == SIGKILL || signo == SIGQUIT ||
-		signo == SIGCONT)
+	if (ft_test_sig_list(signo))
 	{
 		pid = waitpid(-1, &status, WNOHANG | WUNTRACED);
-		if (g_job_first && ((cur = g_job_first)))
-		{
-			while (cur)
-			{
-				proc = cur->first_proc;
-				while (proc)
-				{
-					if (proc->pid == pid)
-					{
-						proc->status = status;
-						if (WIFEXITED(status))
-						{
-							proc->completed = 1;
-							if (!(proc->next))
-							{
-								cur->stat_job = ft_strcpy(cur->stat_job, "Done                     ");
-								cur->ready = 1;
-								break ;
-							}
-						}
-						else if (WIFSTOPPED(status))
-						{
-							proc->stopped = 1;
-							cur->stat_job = ft_strcpy(cur->stat_job, "Stopped  by ");
-							tmp = ft_num_to_str(WSTOPSIG(status));
-							cur->stat_job = ft_strfjoin(cur->stat_job, tmp);
-							cur->stat_job = ft_strfjoin(cur->stat_job, "           ");
-							free(tmp);
-							break ;
-						}
-						if (WIFSIGNALED(status))
-						{
-							proc->completed = 1;
-							cur->stat_job = ft_strcpy(cur->stat_job, "Terminated by signal ");
-							tmp = ft_num_to_str(WTERMSIG(status));
-							cur->stat_job = ft_strfjoin(cur->stat_job, tmp);
-							cur->stat_job = ft_strfjoin(cur->stat_job, " ");
-							free(tmp);
-							cur->ready = 1;
-							break ;
-						}
-					}
-					proc = proc->next;
-				}
-				cur = cur->next;
-			}
-		}
-
-		if (g_pipe)
-		{
-			cur_cmd = g_pipe->first_cmd;
-			while (cur_cmd)
-			{
-				if (cur_cmd->pid != 0)
-				{
-					if (cur_cmd->pid == pid)
-					{
-						if ((!(cur_cmd->next)) && (WIFEXITED(status)))
-							ft_set_shell("?", "1");
-						else
-							ft_set_shell("?", "0");
-						cur_cmd->pid = 0;
-					}
-				}
-				cur_cmd = cur_cmd->next;
-			}
-		}
+		ft_test_job_status(pid, status);
+		ft_test_cmd_list(pid, status);
 	}
 	if (signo == SIGINT)
 	{
@@ -103,18 +129,4 @@ void	ft_signal_handler_rl(int signo)
 		else
 			exit(0);
 	}
-}
-
-void	ft_sig_set(void)
-{
-	signal(SIGCHLD, ft_signal_handler_rl);
-	signal(SIGINT, ft_signal_handler_rl);
-	signal(SIGTTIN, ft_signal_handler_rl);
-	signal(SIGTTOU, ft_signal_handler_rl);
-	signal(SIGTSTP, ft_signal_handler_rl);
-	signal(SIGQUIT, ft_signal_handler_rl);
-	signal(SIGKILL, ft_signal_handler_rl);
-	signal(SIGTERM, ft_signal_handler_rl);
-	signal(SIGQUIT, ft_signal_handler_rl);
-	signal(SIGCONT, ft_signal_handler_rl);
 }

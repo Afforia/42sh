@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:01:23 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/27 17:46:51 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/29 23:01:00 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 # include <sys/stat.h>
 # include <setjmp.h>
 # include <fcntl.h>
+# include <termios.h>
 # include <../readline/readline.h>
 # include <readline/history.h>
 # include "../libft/libft.h"
@@ -100,7 +101,11 @@ typedef struct			s_job
 	char				flag;
 	pid_t				pgid;
 	int					ready;
+	struct termios		j_tmod;
 	t_proc				*first_proc;
+	int					in;
+	int					out;
+	int					err;
 	struct s_job		*next;
 }						t_job;
 
@@ -158,6 +163,9 @@ struct termios			g_tmodes;
 int 					g_terminal;
 int						g_is_interactive;
 int						g_job_ind;
+int						g_std_in;
+int						g_std_out;
+int						g_stderr;
 
 typedef struct			s_cmd
 {
@@ -391,6 +399,15 @@ int						ft_ampers_test(char *str, int i, int start);
 void					ft_set_job_plus(void);
 int						ft_cmd_bg(char **av);
 int						ft_cmd_fg(char **av);
+int						ft_cmd_kill(char **av);
+void					ft_test_cmd_list(pid_t pid, int status);
+int						ft_test_sig_list(int signo);
+int						ft_job_stopped (t_job *j);
+int						ft_job_completed (t_job *j);
+char					*ft_add_strnum(char *str, int i);
+pid_t					ft_test_job_status(pid_t pid, int status);
+int						ft_put_job_status(t_job *job, t_proc *proc, int stat);
+int						ft_cmd_bg(char **av);
 int						ft_cmd_kill(char **av);
 
 #endif

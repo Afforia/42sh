@@ -6,12 +6,11 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/27 14:23:43 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/29 14:01:52 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
 
 void	ft_print_jobs(void)
 {
@@ -20,10 +19,13 @@ void	ft_print_jobs(void)
 	job = g_job_first;
 	while (job)
 	{
-		if (job->ready == 1)
+		if (job->ready > 0)
 		{
 			ft_print_job_line(job, 0);
-			job = ft_del_job(job);
+			if (job->ready == 1)
+				job = ft_del_job(job);
+			else
+				job->ready = 0;
 		}
 		else
 			job = job->next;

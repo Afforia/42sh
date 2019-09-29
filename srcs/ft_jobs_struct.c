@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/27 16:59:56 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/29 16:14:54 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,15 @@ void	ft_insert_job(t_job *cur_job)
 	}
 }
 
+void	ft_free_job(t_job *del)
+{
+	if (del->orig_cmd)
+		free(del->orig_cmd);
+	if (del->first_proc)
+		ft_del_proc_list(del->first_proc);
+	free(del);
+}
+
 t_job	*ft_del_job(t_job *del)
 {
 	t_job	*prev;
@@ -59,11 +68,7 @@ t_job	*ft_del_job(t_job *del)
 				g_job_first = del->next;
 				prev = g_job_first;
 			}
-			if (del->orig_cmd)
-				free(del->orig_cmd);
-			if (del->first_proc)
-				ft_del_proc_list(del->first_proc);
-			free(del);
+			ft_free_job(del);
 			break ;
 		}
 		else
@@ -72,6 +77,25 @@ t_job	*ft_del_job(t_job *del)
 	}
 	ft_set_job_plus();
 	return (prev);
+}
+
+t_job	*ft_new_job(t_cmdlist *cur_cmd)
+{
+	t_job	*cur_job;
+
+	cur_job = malloc(sizeof(t_job));
+	cur_job->stat_job = ft_strdup("Running               ");
+	cur_job->ind = g_job_ind;
+	g_job_ind++;
+	cur_job->next = NULL;
+	cur_job->first_proc = NULL;
+	cur_job->orig_cmd = NULL;
+	if (g_pgid == 0)
+		g_pgid = cur_cmd->pid;
+	cur_job->pgid = g_pgid;
+	cur_job->ready = 0;
+//	tcgetattr(g_terminal, &cur_job->j_tmod);
+	return (cur_job);
 }
 
 int		ft_if_job(t_cmdlist *cur_cmd)
@@ -83,18 +107,7 @@ int		ft_if_job(t_cmdlist *cur_cmd)
 	{
 		if (cur_cmd->nr == 1)
 		{
-			cur_job = malloc(sizeof(t_job));
-			cur_job->stat_job = ft_strdup("Running               ");
-			cur_job->ind = g_job_ind;
-			g_job_ind++;
-			cur_job->next = NULL;
-			cur_job->first_proc = NULL;
-			cur_job->orig_cmd = NULL;
-
-			if (g_pgid == 0)
-				g_pgid = cur_cmd->pid;
-			cur_job->pgid = g_pgid;
-			cur_job->ready = 0;
+			cur_job = ft_new_job(cur_cmd);
 			if (!(g_job_first))
 			{
 				g_job_first = cur_job;
@@ -109,7 +122,5 @@ int		ft_if_job(t_cmdlist *cur_cmd)
 		}
 		ft_add_proc(cur_cmd);
 	}
-//	else
-//		tcsetpgrp(g_terminal, g_pgid);
 	return (1);
 }

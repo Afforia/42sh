@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/27 14:28:00 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/28 22:39:40 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	ft_print_job_line(t_job *job, int fl)
 		{
 			if (proc == job->first_proc)
 			{
-				len= 0;
+				len = 0;
 				if ((tmp = ft_print_job_pref(job)))
 					len = ft_strlen(tmp);
 			}

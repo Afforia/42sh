@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 10:27:38 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/27 11:00:35 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/29 21:22:36 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,9 +112,9 @@ int			main(int argc, char **argv, char **environ)
 	ft_init_glvar(argv);
 	g_envi->first_list = ft_create_exe_list();
 	g_cmd->jmp_code = setjmp(g_cmd->ebuf);
+	ft_sig_set();
 	while (g_subshell == 0 && argc == 1)
 	{
-		ft_sig_set();
 		if (g_check == 1)
 			exit(0);
 		ft_print_jobs();

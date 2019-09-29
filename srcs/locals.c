@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/26 22:16:48 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/29 23:17:45 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void	ft_init_glvar(char **av)
 	g_job_first = NULL;
 	g_job_last = NULL;
 	g_job_ind = 1;
-	g_job = 0;
+	g_job = -1;
 	g_envi->hash_first = NULL;
 	g_subshell = 1 - isatty(STDIN_FILENO);
 	g_parent_pid = getpid();
@@ -59,7 +59,9 @@ void	ft_init_glvar(char **av)
 	}
 	else
 		g_app_full_name = ft_strdup(av[0]);
-//	return ;
+	g_std_in = dup(STDIN_FILENO);
+	g_std_out = dup(STDOUT_FILENO);
+	g_stderr = dup(STDERR_FILENO);
 	g_terminal = STDIN_FILENO;
 	g_is_interactive = isatty(g_terminal);
 	if (g_is_interactive)

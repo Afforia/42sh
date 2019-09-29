@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/26 15:38:41 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/27 16:20:35 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/28 17:08:32 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,4 +124,5 @@ void		ft_do_cmd_shell(char **av, int start, int flagpipe)
 		ft_do_cmd_list(p_head, flagpipe);	
 	p_head->first_cmd = ft_free_cmd_list(p_head->first_cmd);
 	free(p_head);
+
 }
