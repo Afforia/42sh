@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/06 14:40:31 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/11 13:15:01 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/30 15:30:10 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ int		ft_fork(t_pipe *p_head)
 		ft_print_msg(" : Error in function: ", "FORK");
 		return (-1);
 	}
+	p_head->cur_cmd->pid_z = p_head->cur_cmd->pid;
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:01:23 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/29 23:01:00 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/30 15:30:10 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,11 +121,13 @@ typedef struct			s_cmdlist
 	int					fd1;
 	int					fd2;
 	pid_t				pid;
+	pid_t				pid_z;
 	char				*here;
 	char				**locals;
 	int					flag_not;
 	int					andor;
 	int					child_pid;
+	char				*original;
 	struct s_cmdlist	*next;
 }						t_cmdlist;
 typedef struct			s_pipe
@@ -405,9 +407,12 @@ int						ft_test_sig_list(int signo);
 int						ft_job_stopped (t_job *j);
 int						ft_job_completed (t_job *j);
 char					*ft_add_strnum(char *str, int i);
-pid_t					ft_test_job_status(pid_t pid, int status);
+void					ft_test_job_status(pid_t pid, int status);
 int						ft_put_job_status(t_job *job, t_proc *proc, int stat);
 int						ft_cmd_bg(char **av);
 int						ft_cmd_kill(char **av);
+void					ft_test_tstp(pid_t pid);
+t_job					*ft_new_job(t_cmdlist *cur_cmd);
+void					ft_insert_job(t_job *cur_job);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:32:55 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/29 23:21:47 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/30 16:58:38 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@ void	ft_test_cmd_list(pid_t pid, int status)
 	{
 		while (cur_cmd)
 		{
-			if (cur_cmd->pid != 0)
+			if (cur_cmd->pid_z != 0)
 			{
-				if (cur_cmd->pid == pid)
+				if (cur_cmd->pid_z == pid)
 				{
 					if ((!(cur_cmd->next)) && (WIFEXITED(status)))
 						ft_set_shell("?", "1");
@@ -55,7 +55,6 @@ int		ft_test_sig_list(int signo)
 {
 	if (signo == SIGCHLD || signo == SIGINT || signo == SIGTTIN
 		|| signo == SIGTTOU || signo == SIGTSTP || signo == SIGQUIT)
-//		|| signo == SIGTERM || signo == SIGKILL || signo == SIGCONT)
 		return (1);
 	return (0);
 }
@@ -67,7 +66,7 @@ int		ft_job_stopped(t_job *j)
 	p = j->first_proc;
 	while (p)
 	{
-		if (!(p->completed) && !(p->stopped))
+		if ((p->completed != 1) && (p->stopped != 1))
 			return (0);
 		p = p->next;
 	}
@@ -81,7 +80,7 @@ int		ft_job_completed(t_job *j)
 	p = j->first_proc;
 	while (p)
 	{
-		if (!(p->completed))
+		if ((p->completed != 1))
 			return (0);
 		p = p->next;
 	}

@@ -6,46 +6,11 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/26 15:38:41 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/29 22:51:24 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/30 16:59:21 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-pid_t mark_process_status (pid_t pid, int status)
-{
-  t_job *j;
-  t_proc *p;
-
-	if (pid > 0)
-    {
-		return (ft_test_job_status(pid, status));
-		j = g_job_first;
-		while(j)
-		{
-			p = j->first_proc;
-			while(p)
-			{
-				if (p->pid == pid)
-            	{
-              		p->status = status;
-              		if (WIFSTOPPED (status))
-                		p->stopped = 1;
-              		else
-                	{
-                  		p->completed = 1;
-                  		if (WIFSIGNALED (status))
-                    		ft_print_job_line(j, 0);
-                	}
-            		return (0);
-             	}
-				p = p->next;
-			}
-			j = j->next;
-		}
-    }
-	return (-1);
-}
 
 void	ft_restore_io(void)
 {
@@ -64,11 +29,14 @@ void	ft_job_fg(t_job *j)
 
 	tcsetpgrp(g_terminal, j->pgid);
 	if (kill(- j->pgid, SIGCONT) < 0)
+	{
     	ft_print_msg(": SIGCONT error ", " ");
+		return ;
+	}
 	while (1)
 	{
-		if ((pid = waitpid (WAIT_ANY, &status, WUNTRACED)) > 0)
-			mark_process_status(pid, status);
+		if ((pid = waitpid (WAIT_ANY, &status, WNOHANG | WUNTRACED)) > 0)
+			ft_test_job_status(pid, status);
 			if ((ft_job_stopped(j)) || (ft_job_completed(j)))
 				break ;
 	}

@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:32:55 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/29 19:11:46 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/30 16:02:32 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ int		ft_put_job_status(t_job *job, t_proc *proc, int status)
 	return (0);
 }
 
-pid_t	ft_test_job_status(pid_t pid, int status)
+void	ft_test_job_status(pid_t pid, int status)
 {
 	t_job		*job;
 	t_proc		*proc;
@@ -99,15 +99,14 @@ pid_t	ft_test_job_status(pid_t pid, int status)
 				if (proc->pid == pid)
 				{
 					proc->status = status;
-					if (ft_put_job_status(job, proc, status))
-						return (proc->pgid);
+					ft_put_job_status(job, proc, status);
 				}
 				proc = proc->next;
 			}
 			job = job->next;
 		}
 	}
-	return ((pid_t)NULL);
+	return ;
 }
 
 void	ft_signal_handler_rl(int signo)
@@ -118,11 +117,13 @@ void	ft_signal_handler_rl(int signo)
 	ft_sig_set();
 	if (ft_test_sig_list(signo))
 	{
-		pid = waitpid(-1, &status, WNOHANG | WUNTRACED);
+		pid = waitpid(-1, &status, WNOHANG | WCONTINUED | WUNTRACED);
+		if (signo == SIGTSTP)
+			ft_test_tstp(pid);
 		ft_test_job_status(pid, status);
 		ft_test_cmd_list(pid, status);
 	}
-	if (signo == SIGINT)
+	if (signo == SIGINT || signo == SIGTSTP)
 	{
 		if (g_check == 0)
 			ft_putchar('\n');

@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/26 23:14:51 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/30 15:32:13 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ t_proc	*ft_new_proc(t_cmdlist *cur_cmd)
 	if (cur_cmd && (tmp = malloc(sizeof(t_proc))))
 	{
 		tmp->pgid = g_pgid;
-		tmp->pid = cur_cmd->pid;
+		tmp->pid = cur_cmd->pid_z;
 		tmp->argv = ft_dup_char_matr(cur_cmd->avcmd);
 		tmp->status = 0;
 		tmp->completed = ' ';

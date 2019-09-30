@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/29 16:14:54 by wveta            ###   ########.fr       */
+/*   Updated: 2019/09/30 15:30:10 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,10 +91,9 @@ t_job	*ft_new_job(t_cmdlist *cur_cmd)
 	cur_job->first_proc = NULL;
 	cur_job->orig_cmd = NULL;
 	if (g_pgid == 0)
-		g_pgid = cur_cmd->pid;
+		g_pgid = cur_cmd->pid_z;
 	cur_job->pgid = g_pgid;
 	cur_job->ready = 0;
-//	tcgetattr(g_terminal, &cur_job->j_tmod);
 	return (cur_job);
 }
 

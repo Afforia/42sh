@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
+/*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/05 18:15:47 by thaley            #+#    #+#             */
-/*   Updated: 2019/08/30 19:43:03 by thaley           ###   ########.fr       */
+/*   Updated: 2019/09/30 11:25:46 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ t_shell			*init_term(t_shell *shell)
 	shell->new_param.c_lflag &= ~(ICANON | ECHO | ISIG);
 	shell->new_param.c_cc[VMIN] = 1;
 	shell->new_param.c_cc[VTIME] = 0;
-	if (tcsetattr(0, TCSANOW, &shell->new_param) == -1)
+	if (tcsetattr(0, TCSADRAIN, &shell->new_param) == -1)
 		return (shell);
 	return (shell);
 }
