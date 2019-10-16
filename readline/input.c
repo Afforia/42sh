@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   input.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
+/*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/05 21:15:50 by thaley            #+#    #+#             */
-/*   Updated: 2019/08/31 18:39:36 by wveta            ###   ########.fr       */
+/*   Updated: 2019/10/16 19:11:03 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,11 @@
 
 void		old_input(void)
 {
+	int		i;
+
 	ft_bzero(g_input->input, MAX_CMDS);
+	goto_home_of_line();
 	g_input->cursor_pos = 0;
-	update_cursor();
 	ft_putstr_fd(tgetstr("cd", NULL), STDIN_FILENO);
 	if (g_input->old_input[0] == '\0')
 		g_input->input_len = 0;
@@ -25,10 +27,16 @@ void		old_input(void)
 		ft_strcpy(g_input->input, g_input->old_input);
 		g_input->input_len = ft_strlen(g_input->input);
 	}
+	i = g_input->input_len + g_input->prompt_len;
 	ft_putstr_fd(g_input->input, STDIN_FILENO);
 	g_input->cursor_pos = g_input->old_cursor;
-	update_cursor();
+	while (i > g_input->cursor_pos)
+	{
+		ft_putstr_fd(tgetstr("le", NULL), STDIN_FILENO);
+		i--;
+	}
 	g_input->old_cursor = -1;
+	ft_bzero(g_input->old_input, MAX_CMDS);
 }
 
 char		*ft_find_start(char *s1, char *s2)
@@ -68,8 +76,6 @@ void		input_from_array(char *str)
 
 void		modify_input(char *str)
 {
-	g_input->save_col = g_input->cursor.col;
-	g_input->save_row = g_input->cursor.row;
 	if (g_input->old_cursor == -1)
 	{
 		ft_bzero(g_input->old_input, MAX_CMDS);
@@ -77,9 +83,8 @@ void		modify_input(char *str)
 		g_input->old_cursor = g_input->cursor_pos;
 	}
 	ft_bzero(g_input->input, g_input->input_len);
-	g_input->cursor_pos = 0;
+	goto_home_of_line();
 	g_input->input_len = 0;
-	update_cursor();
 	ft_putstr_fd(tgetstr("cd", NULL), STDIN_FILENO);
 	insert_char(str);
 }

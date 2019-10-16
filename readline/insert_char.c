@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   insert_char.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
+/*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/24 18:31:19 by thaley            #+#    #+#             */
-/*   Updated: 2019/08/31 22:24:16 by wveta            ###   ########.fr       */
+/*   Updated: 2019/10/16 19:48:00 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,64 +38,54 @@ void		insert_char_color(char c, int all)
 	}
 	g_input->input_len++;
 	g_input->cursor_pos++;
-	update_cursor();
-}
-
-static void	insert_memmove(char c)
-{
-	int j;
-
-	j = g_input->cursor_pos;
-	ft_memmove(g_input->input + g_input->cursor_pos + 1,\
-	g_input->input + g_input->cursor_pos,\
-	MAX_CMDS - g_input->cursor_pos - 1);
-	g_input->input[g_input->cursor_pos] = c;
-	while (j <= g_input->input_len && g_input->input[j] != '\0')
-		j++;
-	if (g_input->input[j] == '\0' && j <= g_input->input_len)
-	{
-		ft_memmove(g_input->input + j, g_input->input + j + 1,
-		g_input->input_len - j);
-		g_input->input[g_input->input_len] = '\0';
-		g_input->input_len--;
-	}
-}
-
-static int	insert_loop(char *c, int cur_len, int i)
-{
-	insert_memmove(c[i]);
-	if (c[i] == '\n' && (int)ft_strlen(c) != i)
-	{
-		g_input->cursor_pos = g_input->cursor_pos +\
-		g_input->ws.ws_col - cur_len;
-		g_input->input_len = g_input->cursor_pos;
-		cur_len = 0;
-	}
-	else
-	{
-		ft_putstr_fd(tgetstr("ce", NULL), STDIN_FILENO);
-		ft_putstr_fd(g_input->input + g_input->cursor_pos, STDOUT_FILENO);
-		cur_len++;
-		g_input->input_len++;
-		g_input->cursor_pos++;
-	}
-	return (cur_len);
 }
 
 void		insert_char(char *c)
 {
 	int		i;
-	int		cur_len;
+	int		save_curs;
+	char	*tmp;
 
 	i = 0;
-	cur_len = g_input->prompt_len;
-	while (c[i])
+	save_curs = 0;
+	if (c[0] == '\0')
+		return ;
+	if (g_input->cursor_pos - g_input->prompt_len != g_input->input_len)
+	{
+		g_input->input_len = g_input->cursor_pos - g_input->prompt_len;
+		save_curs = g_input->cursor_pos + ft_strlen(c);
+		tmp = ft_strjoin(c, g_input->input + (g_input->cursor_pos - g_input->prompt_len));
+	}
+	else
+		tmp = ft_strdup(c);
+	while (tmp[i])
 	{
 		if (g_input->input_len + 1 >= MAX_CMDS)
 			return ;
-		cur_len = insert_loop(c, cur_len, i);
-		update_cursor();
+		// ft_memmove(g_input->input + (g_input->cursor_pos - g_input->prompt_len) + 1,\
+		// g_input->input + (g_input->cursor_pos - g_input->prompt_len) ,\
+		// MAX_CMDS - ((g_input->cursor_pos - g_input->prompt_len) - 1));
+		g_input->input[(g_input->cursor_pos - g_input->prompt_len)] = tmp[i];
+		if (g_input->cursor_pos % g_input->ws.ws_col == 0)
+			ft_putstr_fd(tgetstr("do", NULL), STDIN_FILENO);
+		ft_putstr_fd(tgetstr("ce", NULL), STDIN_FILENO);
+		ft_putchar_fd(g_input->input[g_input->cursor_pos - g_input->prompt_len], STDOUT_FILENO);
+		g_input->input_len++;
+		g_input->cursor_pos++;
 		i++;
 	}
-	update_cursor();
+	if (save_curs != 0)
+	{
+		while (g_input->cursor_pos > save_curs)
+		{
+			g_input->cursor_pos--;
+			if (g_input->cursor_pos % 80 == 0 && g_input->cursor_pos >= 80)
+				ft_line_up();
+			else
+				ft_putstr_fd(tgetstr("le", NULL), STDIN_FILENO);
+		}
+	}
+	if (tmp)
+		free(tmp);
+	tmp = NULL;
 }

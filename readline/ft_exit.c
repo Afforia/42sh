@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/24 17:56:56 by thaley            #+#    #+#             */
-/*   Updated: 2019/08/29 19:49:53 by thaley           ###   ########.fr       */
+/*   Updated: 2019/10/02 21:06:09 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,15 @@ int			ctrl_d(char *c)
 	return (0);
 }
 
-char		*finish_loop(char c, t_shell *shell)
+void		return_to_norm(t_shell *shell)
 {
 	tcsetattr(0, TCSANOW, &shell->old_param);
+	goto_end_of_line();
+}
+
+char		*finish_loop(char c, t_shell *shell)
+{
+	return_to_norm(shell);
 	if (c == 4 && !g_input->heredoc && !g_input->input_len)
 		return ("exit");
 	else if (c == 12)

@@ -6,11 +6,25 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/24 15:55:35 by thaley            #+#    #+#             */
-/*   Updated: 2019/09/01 14:46:44 by thaley           ###   ########.fr       */
+/*   Updated: 2019/10/16 19:11:03 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "readline.h"
+
+static void	home_of_rec_hist(char *str)
+{
+	int		i;
+
+	i = ft_strlen(str);
+	while (i > 0)
+	{
+		if (str[i - 1] == '\n')
+			ft_putstr_fd(tgetstr("up", NULL), STDIN_FILENO);
+		i--;
+	}
+	ft_putstr_fd(tgetstr("cr", NULL), STDIN_FILENO);
+}
 
 static void	remade_search_input(char *str, int i, char c)
 {
@@ -18,24 +32,25 @@ static void	remade_search_input(char *str, int i, char c)
 		str[i] = '\0';
 	else if (ft_isprint(c))
 		str[i] = c;
-	update_cursor();
+	home_of_rec_hist(g_input->dop_input);
 	ft_putstr_fd(tgetstr("cd", NULL), STDIN_FILENO);
+	ft_putstr_fd("rev-i-search `", STDIN_FILENO);
 	ft_putstr_fd(str, STDIN_FILENO);
 	ft_putstr_fd("\033[5m", STDIN_FILENO);
 	ft_putstr_fd("_", STDIN_FILENO);
 	ft_putstr_fd(RESET, STDIN_FILENO);
-	ft_putstr_fd(" : ", STDIN_FILENO);
+	ft_putstr_fd(": ", STDIN_FILENO);
+	if (c == 127)
+		ft_bzero(g_input->dop_input, MAX_CMDS);
 }
 
-static void	return_cmd(char *tmp, int his_pos, int save_col)
+static void	return_cmd(char *tmp, int his_pos)
 {
-	g_input->cursor.col = 1;
-	g_input->cursor_pos = 0;
-	update_cursor();
+	g_input->cursor_pos = g_input->prompt_len;
+	home_of_rec_hist(g_hist->cmd[his_pos]);
+	ft_putstr_fd(tgetstr("cr", NULL), STDIN_FILENO);
 	ft_putstr_fd(tgetstr("cd", NULL), STDIN_FILENO);
 	ft_putstr_fd(g_input->prompt, STDIN_FILENO);
-	g_input->cursor.col = save_col;
-	update_cursor();
 	if (his_pos > -1 && tmp[0] != '\0')
 		insert_char(g_hist->cmd[his_pos]);
 	ft_bzero(tmp, MAX_BSIZE);
@@ -49,6 +64,8 @@ static int	find_match_hist(int j, char *tmp, int i, char c)
 	{
 		if (ft_strstr(g_hist->cmd[j], tmp))
 		{
+			ft_bzero(g_input->dop_input, MAX_CMDS);
+			ft_strcpy(g_input->dop_input, g_hist->cmd[j]);
 			ft_putstr_fd(g_hist->cmd[j], STDIN_FILENO);
 			break ;
 		}
@@ -88,7 +105,6 @@ static int	recur_search_loop(char *c, int j, char *tmp)
 
 int			search_in_hist(void)
 {
-	int		save_col;
 	char	tmp[MAX_BSIZE];
 	char	c[6];
 	int		j;
@@ -96,15 +112,11 @@ int			search_in_hist(void)
 	if (g_input->input_len != 0)
 		return (0);
 	j = g_hist->amount - 1;
+	ft_bzero(g_input->dop_input, MAX_CMDS);
 	ft_bzero(tmp, MAX_BSIZE);
-	save_col = g_input->cursor.col;
 	move_cursor_hist();
-	ft_putstr_fd("rev-i-search : ", STDIN_FILENO);
-	g_input->cursor = get_cursor_pos();
-	g_input->cursor_pos = 0;
-	update_cursor();
 	remade_search_input("\0", 0, '\0');
 	j = recur_search_loop(c, j, tmp);
-	return_cmd(tmp, j, save_col);
+	return_cmd(tmp, j);
 	return (1);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
+/*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/05 17:44:03 by thaley            #+#    #+#             */
-/*   Updated: 2019/09/28 14:54:52 by wveta            ###   ########.fr       */
+/*   Updated: 2019/10/16 19:11:03 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,13 +66,11 @@ char			*read_line(char *prompt)
 		write(1, "\n", 1);
 	ft_putstr_fd(prompt, STDIN_FILENO);
 	g_input->cursor = get_cursor_pos();
-	g_input->save_row = g_input->cursor.row;
-	g_input->save_col = g_input->cursor.col;
 	g_hist->cursor = 0;
 	if (g_input->head != '\0' && g_input->head != '\n')
 		insert_char(&g_input->head);
+	ft_putstr_fd(tgetstr("sc", NULL), STDIN_FILENO);
 	ret = init_loop(shell);
-	update_cursor();
 	history_return_n(ret);
 	write(1, "\n", 1);
 	free_struct(&shell);

@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/23 17:58:21 by thaley            #+#    #+#             */
-/*   Updated: 2019/08/29 19:49:21 by thaley           ###   ########.fr       */
+/*   Updated: 2019/10/03 09:38:01 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,12 +51,12 @@ typedef struct		s_input
 	struct winsize	ws;
 	t_tab			auto_tab;
 	char			input[MAX_CMDS];
+	char			dop_input[MAX_CMDS];
 	char			copy[MAX_CMDS];
 	char			*prompt;
 	char			old_input[MAX_CMDS];
 	int				input_len;
 	int				cursor_pos;
-	int				save_row;
 	int				save_col;
 	int				old_cursor;
 	int				heredoc;

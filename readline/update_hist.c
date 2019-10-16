@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/24 16:01:43 by thaley            #+#    #+#             */
-/*   Updated: 2019/09/01 14:46:53 by thaley           ###   ########.fr       */
+/*   Updated: 2019/10/03 09:33:13 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,8 @@
 
 void		move_cursor_hist(void)
 {
-	if (g_input->cursor.row >= g_input->ws.ws_row / 2)
-		g_input->cursor.row = 1;
-	g_input->cursor.col = 1;
-	g_input->cursor_pos = 0;
-	update_cursor();
+	goto_home_of_line();
+	ft_putstr_fd(tgetstr("cr", NULL), STDIN_FILENO);
 	ft_putstr_fd(tgetstr("cd", NULL), STDIN_FILENO);
 }
 

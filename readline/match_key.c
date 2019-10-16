@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/05 20:12:29 by thaley            #+#    #+#             */
-/*   Updated: 2019/09/01 13:47:31 by thaley           ###   ########.fr       */
+/*   Updated: 2019/10/02 21:16:17 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,23 +14,26 @@
 
 int		not_move_hist(int direct)
 {
-	if (count_n())
+	int		i;
+
+	i = g_input->cursor_pos - g_input->prompt_len;
+	while (i > 0 && !direct)
 	{
-		if (direct && (g_input->cursor_pos + g_input->ws.ws_col
-		< g_input->input_len || g_input->cursor_pos
-		< g_input->ws.ws_col - g_input->cursor.col))
+		if (g_input->input[i] == '\n')
 		{
-			ft_line_down();
+			move_line_up();
 			return (1);
 		}
-		else if (!direct && g_input->cursor_pos >
-		g_input->ws.ws_col - g_input->cursor.col)
+		i--;
+	}
+	while (i < g_input->input_len && direct)
+	{
+		if (g_input->input[i] == '\n')
 		{
-			ft_line_up();
+			move_line_down();
 			return (1);
 		}
-		else
-			return (0);
+		i++;
 	}
 	return (0);
 }
@@ -41,8 +44,7 @@ void	clean_all(void)
 		return ;
 	ft_bzero(g_input->input, g_input->input_len);
 	g_input->input_len = 0;
-	g_input->cursor_pos = 0;
-	update_cursor();
+	g_input->cursor_pos = g_input->prompt_len;
 	ft_putstr_fd(tgetstr("cd", NULL), STDIN_FILENO);
 }
 
@@ -81,7 +83,7 @@ int		match_history_key(char *c)
 	else if (!ft_strcmp(c, "\e[B"))
 		history_move(1);
 	else if (!ft_strcmp(c, "\e[1;5A"))
-		ft_line_up();
+		move_line_up();
 	else if (c[0] == '\xc3' && c[1] == '\xa7' && !c[2])
 		ft_copy(c);
 	else if (c[0] == '\xc3' && c[1] == '\x87' && !c[2])
@@ -93,7 +95,7 @@ int		match_history_key(char *c)
 	else if (c[0] == '\xcb' && c[1] == '\x9b' && !c[2])
 		ft_cut(c);
 	else if (!ft_strcmp(c, "\e[1;5B"))
-		ft_line_down();
+		move_line_down();
 	else if (c[0] == '\v' && !c[1])
 		clean_all();
 	else

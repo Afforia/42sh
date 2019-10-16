@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/23 17:54:28 by thaley            #+#    #+#             */
-/*   Updated: 2019/09/01 14:44:36 by thaley           ###   ########.fr       */
+/*   Updated: 2019/10/16 19:09:40 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,5 +118,8 @@ void		mall_check(void);
 int			not_move_hist(int direct);
 int			count_n(void);
 void		move_cursor_hist(void);
+
+void		move_line_up(void);
+void		start_of_line(int up_down);
 
 #endif

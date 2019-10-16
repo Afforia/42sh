@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
+/*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/05 20:07:10 by thaley            #+#    #+#             */
-/*   Updated: 2019/09/24 19:55:59 by wveta            ###   ########.fr       */
+/*   Updated: 2019/10/03 07:53:52 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,10 @@ void		signal_handler_quote(void)
 	ft_bzero(buf, 4097);
 	tmp = NULL;
 	write(1, "\n", 1);
+	// ft_putstr_fd(tgetstr("do", NULL), STDIN_FILENO);
 	ft_putstr_fd(g_input->prompt, STDIN_FILENO);
-	g_input->cursor = get_cursor_pos();
+	// g_input->cursor = get_cursor_pos();
+	g_input->cursor_pos = g_input->prompt_len;
 	if (g_hist->amount > 99)
 		remade_hist();
 	j = delete_nulls(buf);
@@ -56,7 +58,7 @@ void		signal_handler_quote(void)
 	free(tmp);
 	ft_bzero(g_input->input, g_input->input_len);
 	g_input->input_len = 0;
-	g_input->cursor_pos = 0;
+	// g_input->cursor_pos = 0;
 }
 
 void		signal_handler_tab(int cursor)
@@ -90,20 +92,15 @@ void		signal_handler(int sign)
 
 void		ft_signal_win_size(int signo)
 {
-	int	i;
-
 	(void)signo;
 	ioctl(STDIN_FILENO, TIOCGWINSZ, &g_input->ws);
-	i = g_input->ws.ws_col;
-	g_input->old_width = i;
-	if (i != (g_input->input_len + g_input->cursor.col)\
+	if (g_input->ws.ws_col < (g_input->input_len + g_input->cursor.col)\
 		&& g_input->input_len > 0)
 	{
-		ft_cut("\xe2\x89\x88");
 		ft_putstr_fd(tgetstr("cl", NULL), STDIN_FILENO);
 		ft_putstr_fd(g_input->prompt, STDIN_FILENO);
-		g_input->cursor = get_cursor_pos();
-		ft_paste();
+		g_input->cursor_pos = g_input->prompt_len;
+		ft_putstr_fd(g_input->input, STDIN_FILENO);
 	}
 	longjmp(g_cmd->ebuf2, g_cmd->jmp_code2);
 }

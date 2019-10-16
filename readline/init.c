@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
+/*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/05 18:15:47 by thaley            #+#    #+#             */
-/*   Updated: 2019/09/30 11:25:46 by wveta            ###   ########.fr       */
+/*   Updated: 2019/10/16 19:11:03 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ static void		null_all(void)
 	ft_bzero(g_input->input, MAX_CMDS);
 	ft_bzero(g_input->copy, MAX_CMDS);
 	ft_bzero(g_input->old_input, MAX_CMDS);
+	ft_bzero(g_input->dop_input, MAX_CMDS);
 	g_input->old_cursor = -1;
 	g_input->heredoc = 0;
 	g_input->quotes = '\0';
@@ -46,6 +47,7 @@ void			init_input(char *prompt)
 	else
 		g_input->prompt_len -= 16;
 	ioctl(STDIN_FILENO, TIOCGWINSZ, &g_input->ws);
+	g_input->cursor_pos = g_input->prompt_len;
 	g_input->old_width = g_input->ws.ws_col;
 }
 
@@ -73,6 +75,7 @@ static char		multi_line(void)
 {
 	free(g_input->prompt);
 	g_input->prompt = ft_strdup(" > ");
+	g_input->prompt_len = ft_strlen(g_input->prompt);
 	signal_handler_quote();
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/05 20:21:52 by thaley            #+#    #+#             */
-/*   Updated: 2019/09/01 13:16:35 by thaley           ###   ########.fr       */
+/*   Updated: 2019/10/02 20:58:32 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,86 +14,138 @@
 
 void		ft_move_left(void)
 {
-	if (g_input->cursor_pos == 0)
+	if (g_input->cursor_pos == g_input->prompt_len)
 		return ;
-	if (g_input->input[g_input->cursor_pos - 1] == '\0')
+	if (g_input->input[(g_input->cursor_pos - g_input->prompt_len) - 1] == '\n')
 	{
 		ft_line_up();
-		while (g_input->input[g_input->cursor_pos] != '\n')
+		while (g_input->input[(g_input->cursor_pos - g_input->prompt_len)] != '\n')
 			ft_move_right();
 	}
 	else
+	{
 		g_input->cursor_pos--;
-	update_cursor();
+		ft_putstr_fd(tgetstr("le", NULL), STDIN_FILENO);
+	}
 }
 
 void		ft_move_right(void)
 {
-	if (g_input->cursor_pos == g_input->input_len)
+	if ((g_input->cursor_pos - g_input->prompt_len) == g_input->input_len)
 		return ;
-	if (g_input->input[g_input->cursor_pos] == '\n'\
-		&& g_input->cursor_pos < g_input->input_len)
+	if (g_input->input[(g_input->cursor_pos - g_input->prompt_len)] == '\n'
+		&& (g_input->cursor_pos - g_input->prompt_len) < g_input->input_len)
 	{
 		ft_line_down();
-		while (g_input->input[g_input->cursor_pos - 1] != '\0')
+		while (g_input->input[(g_input->cursor_pos - g_input->prompt_len) - 1] != '\n')
 			ft_move_left();
 	}
 	else
+	{
 		g_input->cursor_pos++;
-	update_cursor();
+		ft_putstr_fd(tgetstr("nd", NULL), STDIN_FILENO);
+	}
 }
 
 void		move_word_left(void)
 {
-	if (g_input->cursor_pos == 0)
+	if (g_input->cursor_pos == g_input->prompt_len)
 		return ;
-	g_input->cursor_pos--;
-	while (g_input->cursor_pos > 0 &&
-			(ft_isspace2(g_input->input[g_input->cursor_pos]) != 0))
-		g_input->cursor_pos--;
-	while (g_input->cursor_pos > 0 &&
-	ft_isspace2(g_input->input[g_input->cursor_pos - 1]) == 0)
-		g_input->cursor_pos--;
-	update_cursor();
-}
-
-static int	check_last(void)
-{
-	ft_line_down();
-	if (g_input->input[g_input->cursor_pos] == '\0'
-		|| g_input->input[g_input->cursor_pos] == '\n')
+	if (g_input->input[(g_input->cursor_pos - g_input->prompt_len) - 1] != '\n')
 	{
-		while (g_input->input[g_input->cursor_pos - 1] != '\0')
-			g_input->cursor_pos--;
-		return (1);
+		g_input->cursor_pos--;
+		ft_putstr_fd(tgetstr("le", NULL), STDIN_FILENO);
 	}
-	return (0);
+	if (g_input->input[(g_input->cursor_pos - g_input->prompt_len)] < 33) //if we stand on the /n or space
+	{
+		while (g_input->cursor_pos - g_input->prompt_len > 0
+			&& g_input->input[(g_input->cursor_pos - g_input->prompt_len)] < 33)
+		{
+			if (g_input->input[(g_input->cursor_pos - g_input->prompt_len) - 1] == '\n')
+				ft_line_up(); // at the end of line
+			g_input->cursor_pos--;
+			ft_putstr_fd(tgetstr("le", NULL), STDIN_FILENO);
+		}
+		while (g_input->cursor_pos - g_input->prompt_len > 0
+			&& g_input->input[(g_input->cursor_pos - g_input->prompt_len) - 1] > 32)
+		{
+			g_input->cursor_pos--;
+			ft_putstr_fd(tgetstr("le", NULL), STDIN_FILENO);
+		}
+	}
+	else if (g_input->input[(g_input->cursor_pos - g_input->prompt_len)] > 32)
+	{
+		while (g_input->input[(g_input->cursor_pos - g_input->prompt_len) - 1] > 32)
+		{
+			g_input->cursor_pos--;
+			ft_putstr_fd(tgetstr("le", NULL), STDIN_FILENO);
+		}
+		while (g_input->cursor_pos - g_input->prompt_len > 0
+			&& g_input->input[(g_input->cursor_pos - g_input->prompt_len) - 1] < 33)
+		{
+			if (g_input->input[(g_input->cursor_pos - g_input->prompt_len) - 1] == '\n')
+				ft_line_up(); // at the end of line
+			else if (g_input->input[(g_input->cursor_pos - g_input->prompt_len) - 1] != '\n')
+			{
+				g_input->cursor_pos--;
+				ft_putstr_fd(tgetstr("le", NULL), STDIN_FILENO);
+			}
+		}
+		while (g_input->input[(g_input->cursor_pos - g_input->prompt_len) - 1] > 32)
+		{
+			g_input->cursor_pos--;
+			ft_putstr_fd(tgetstr("le", NULL), STDIN_FILENO);
+		}
+	}
 }
 
 void		move_word_right(void)
 {
-	int		line;
-
-	line = 0;
-	if (g_input->input_len == 0 || g_input->cursor_pos == g_input->input_len)
+	if (g_input->input_len == 0 || (g_input->cursor_pos - g_input->prompt_len) == g_input->input_len)
 		return ;
-	if ((g_input->input[g_input->cursor_pos] == '\0' ||\
-		g_input->input[g_input->cursor_pos] == '\n')\
-		&& g_input->cursor_pos < g_input->input_len)
-		line = check_last();
-	if (!line)
+	if (g_input->input[g_input->cursor_pos - g_input->prompt_len] < 33)
 	{
-		while (g_input->input[g_input->cursor_pos] &&
-			g_input->cursor_pos <= g_input->input_len &&
-			ft_isspace2(g_input->input[g_input->cursor_pos]) == 0)
-			g_input->cursor_pos++;
-		while (g_input->cursor_pos <= g_input->input_len &&
-			ft_isspace2(g_input->input[g_input->cursor_pos]) != 0)
-			g_input->cursor_pos++;
-		if (g_input->input[g_input->cursor_pos - 1] == '\n')
-			g_input->cursor_pos--;
-		if (g_input->cursor_pos > g_input->input_len)
-			g_input->cursor_pos = g_input->input_len;
+		while (g_input->input[g_input->cursor_pos - g_input->prompt_len] < 33)
+		{
+			if (g_input->input[g_input->cursor_pos - g_input->prompt_len] == '\n')
+				ft_line_down();
+			else
+			{
+				g_input->cursor_pos++;
+				ft_putstr_fd(tgetstr("nd", NULL), STDIN_FILENO);
+			}
+		}
 	}
-	update_cursor();
+	else
+	{
+		while (g_input->input[(g_input->cursor_pos - g_input->prompt_len)] > 32
+			&& g_input->cursor_pos - g_input->prompt_len < g_input->input_len)
+		{
+			g_input->cursor_pos++;
+			ft_putstr_fd(tgetstr("nd", NULL), STDIN_FILENO);
+		}
+		while (g_input->input[(g_input->cursor_pos - g_input->prompt_len)] < 33
+			&& g_input->cursor_pos - g_input->prompt_len < g_input->input_len)
+		{
+			if (g_input->input[(g_input->cursor_pos - g_input->prompt_len)] == '\n')
+				ft_line_down();
+			else
+			{
+				g_input->cursor_pos++;
+				ft_putstr_fd(tgetstr("nd", NULL), STDIN_FILENO);
+			}
+		}
+		if (g_input->input[(g_input->cursor_pos - g_input->prompt_len) + 1] == '\0'
+			&& g_input->cursor_pos - g_input->prompt_len < g_input->input_len)
+		{
+			g_input->cursor_pos++;
+			ft_putstr_fd(tgetstr("nd", NULL), STDIN_FILENO);
+		}
+		else if (g_input->input[(g_input->cursor_pos - g_input->prompt_len) + 1] > 32
+				&& g_input->input[(g_input->cursor_pos - g_input->prompt_len)] < 33)
+		{
+			g_input->cursor_pos++;
+			ft_putstr_fd(tgetstr("nd", NULL), STDIN_FILENO);
+		}
+	}
 }
