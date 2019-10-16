@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:01:23 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/30 15:30:10 by wveta            ###   ########.fr       */
+/*   Updated: 2019/10/16 17:22:06 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,6 +147,7 @@ int						g_color;
 char					**g_shell;
 int						g_and_or;
 int						g_not;
+int						g_skip;
 int						g_rc;
 int						g_built_rc;
 int						g_subs_rc;
@@ -414,5 +415,6 @@ int						ft_cmd_kill(char **av);
 void					ft_test_tstp(pid_t pid);
 t_job					*ft_new_job(t_cmdlist *cur_cmd);
 void					ft_insert_job(t_job *cur_job);
+void					ft_set_job_cont(t_job *j);
 
 #endif

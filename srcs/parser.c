@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/25 16:17:45 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/28 18:12:24 by wveta            ###   ########.fr       */
+/*   Updated: 2019/10/15 14:01:18 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ void	ft_init_parse_int(int *i, int *i_cmd, int *qflag)
 	g_job_start = NULL;
 	g_job_end = 0;
 	g_and_or_line = 0;
+	g_skip = 0;
 	g_job = 0;
 }
 
@@ -108,10 +109,7 @@ void	ft_parse_line(char *str)
 		else if (qflag == 0 && str[i + i_cmd] == '\'')
 			qflag = 2;
 		else if (qflag == 0 && (str[i + i_cmd] == ';' || 
-//		(str[i + i_cmd] == '&' && str[i + i_cmd + 1] != '&'
-//		&& str[i + i_cmd - 1] != '&')
-		ft_ampers_test(str, i, i_cmd) == 1
-		))
+		ft_ampers_test(str, i, i_cmd) == 1))
 		{
 			if (ft_parse_cmd(str + i_cmd, i) == 1)
 				return ;
@@ -121,7 +119,8 @@ void	ft_parse_line(char *str)
 		else if (qflag == 0 && ft_strncmp(str + i + i_cmd, "&&", 2) ==0)
 		{
 			if (ft_parse_cmd(str + i_cmd, i) == 1)
-				return ;
+//				return ;
+				g_skip = 1;
 			i_cmd = i_cmd + i + 2;
 			i = 1;
 			g_and_or = 1;
@@ -129,7 +128,8 @@ void	ft_parse_line(char *str)
 		else if (qflag == 0 && ft_strncmp(str + i + i_cmd, "||", 2) ==0)
 		{
 			if (ft_parse_cmd(str + i_cmd, i) == 1)
-				return ;
+//				return ;
+				g_skip = 1;
 			i_cmd = i_cmd + i + 2;
 			i = 1 ;
 			g_and_or = 2;

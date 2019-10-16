@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/26 15:38:41 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/30 16:44:52 by wveta            ###   ########.fr       */
+/*   Updated: 2019/10/15 12:43:13 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ void	ft_test_tstp(pid_t pid2)
 				job_new = ft_new_job(cmd);
 				job_new->orig_cmd = ft_get_str_cmd(cmd->avcmd);
 				free(job_new->stat_job);
-				job_new->stat_job = ft_strdup("Suspended            ");
+				job_new->stat_job = ft_strdup("Stopped              ");
 				break ;
 			}	
 			cmd = cmd->next;

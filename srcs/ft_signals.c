@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:32:55 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/30 16:02:32 by wveta            ###   ########.fr       */
+/*   Updated: 2019/10/16 12:55:18 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ int		ft_set_job_status(t_job *job, int n, int status)
 		job->stat_job = ft_strdup("Terminated by signal ");
 		job->stat_job = ft_add_strnum(job->stat_job, WTERMSIG(status));
 		job->stat_job = ft_strfjoin(job->stat_job, " ");
-		if (WTERMSIG(status) != 9)
-			job->ready = 2;
+//		if (WTERMSIG(status) != 9 && WTERMSIG(status) != 2)
+//			job->ready = 2;
 	}
 	else if (n == 4)
 	{
@@ -118,12 +118,14 @@ void	ft_signal_handler_rl(int signo)
 	if (ft_test_sig_list(signo))
 	{
 		pid = waitpid(-1, &status, WNOHANG | WCONTINUED | WUNTRACED);
-		if (signo == SIGTSTP)
+		if (signo == SIGTTIN || signo == SIGTTOU)
+			tcsetpgrp(0, getpid());
+		else if (signo == SIGTSTP)
 			ft_test_tstp(pid);
 		ft_test_job_status(pid, status);
 		ft_test_cmd_list(pid, status);
 	}
-	if (signo == SIGINT || signo == SIGTSTP)
+	if (signo == SIGINT)
 	{
 		if (g_check == 0)
 			ft_putchar('\n');

@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/30 15:30:10 by wveta            ###   ########.fr       */
+/*   Updated: 2019/10/16 13:55:27 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,17 +24,20 @@ void	ft_insert_job(t_job *cur_job)
 			cur_job->num = 1;
 			cur_job->next = tmp;
 			g_job_first = cur_job;
+			return ;
 		}
 		else if (tmp->next && tmp->num + 1 < tmp->next->num)
 		{
 			cur_job->num = tmp->num + 1;
 			cur_job->next = tmp->next;
 			tmp->next = cur_job;
+			return ;
 		}
 		else if (!(tmp->next) && tmp != cur_job)
 		{
 			tmp->next = cur_job;
 			cur_job->num = tmp->num + 1;
+			return ;
 		}
 		else
 			tmp = tmp->next;

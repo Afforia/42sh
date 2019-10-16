@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/06 14:40:31 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/30 15:30:10 by wveta            ###   ########.fr       */
+/*   Updated: 2019/10/16 17:32:01 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ void	ft_init_curcmd(t_cmdlist *cur_cmd)
 		g_and_or = 0;
 		cur_cmd->locals = NULL;
 		cur_cmd->find_path = NULL;
+		cur_cmd->pid_z = 0;
 	}
 }
 

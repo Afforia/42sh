@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/27 12:30:31 by wveta            ###   ########.fr       */
+/*   Updated: 2019/10/16 14:02:12 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,8 @@ void	ft_set_job_plus()
 			prev = last;
 			last = job->ind;
 		}
+		else if (job->ind > prev)
+			prev = job->ind;
 		job->flag = ' ';
 		job = job->next;
 	}

@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:32:55 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/30 16:58:38 by wveta            ###   ########.fr       */
+/*   Updated: 2019/10/15 14:17:25 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,9 @@ void	ft_test_cmd_list(pid_t pid, int status)
 				if (cur_cmd->pid_z == pid)
 				{
 					if ((!(cur_cmd->next)) && (WIFEXITED(status)))
-						ft_set_shell("?", "1");
+						ft_set_shell("?", "0"); /*1*/
 					else
-						ft_set_shell("?", "0");
+						ft_set_shell("?", "1"); /*0*/
 					cur_cmd->pid = 0;
 				}
 			}

@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/28 22:39:40 by wveta            ###   ########.fr       */
+/*   Updated: 2019/10/15 11:48:52 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ void	ft_print_if_job(char *str, int fl)
 		if (job->num == ft_atoi(str))
 		{
 			ft_print_job_line(job, fl);
+			job->ready = 0;
 			return ;
 		}
 		job = job->next;
