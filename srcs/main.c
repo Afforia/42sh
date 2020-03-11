@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 10:27:38 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/29 21:22:36 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/25 16:51:43 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,14 @@ char		*ft_get_name(void)
 	int		j;
 
 	pr = NULL;
-	if (!(pr = ft_strnew(255)))
-		exit_shell();
-	getcwd(pr, 255);
+	if (!(pr = ft_get_env2("PWD", g_shell)))
+	{
+		if (!(pr = ft_strnew(255)))
+			exit_shell();
+		getcwd(pr, 255);
+	}
 	j = ft_strlen(pr) - 1;
+	(j > 0 && pr[j] == '/') ? j-- : 0;
 	while (j >= 0 && pr[j])
 	{
 		if (pr[j] == '/')
@@ -81,8 +85,8 @@ void		ft_free_list(void)
 
 void		ft_final_free(void)
 {
-	int i;
-
+	if (g_envi->hash_first)
+		ft_hash_all_del(NULL);
 	g_envi->env = ft_free_char_matr(g_envi->env);
 	ft_free_list();
 	free(g_envi);
@@ -90,60 +94,22 @@ void		ft_final_free(void)
 	free(g_cmd);
 	g_shell = ft_free_char_matr(g_shell);
 	free(g_app_full_name);
-	if (g_subshell == 1)
+	if (g_subshell > 0)
 		return ;
-	i = get_next_line(-7, NULL);
-	ft_history_put();
 }
 
 int			main(int argc, char **argv, char **environ)
 {
 	char	*line_read;
-	char	*pr;
-	char	**lr;
-	int		fd;
 
-	if (!(g_cmd = malloc(sizeof(t_cmd))))
-		exit_shell();
-	if (!(g_envi = malloc(sizeof(t_env))))
-		exit_shell();
-	g_envi->first_list = NULL;
-	g_envi->env = ft_dup_char_matr(environ);
-	ft_init_glvar(argv);
-	g_envi->first_list = ft_create_exe_list();
+	ft_init_shell_val(argv, environ);
 	g_cmd->jmp_code = setjmp(g_cmd->ebuf);
-	ft_sig_set();
 	while (g_subshell == 0 && argc == 1)
 	{
-		if (g_check == 1)
-			exit(0);
-		ft_print_jobs();
-		pr = ft_get_name();
-		line_read = rl_gets(pr);
+		line_read = ft_init_loop_read();
 		ft_parse_line(line_read);
 		free(line_read);
-	}
-	g_subshell = 1;
-	fd = STDIN_FILENO;
-	if (argc > 1 && argv[1] && argv[1][0] != '<')
-	{
-		pr = ft_calc_full_path(ft_strdup(argv[1]));
-		if (ft_check_file(pr, R_OK) != 0 || ((fd = open(pr, O_RDONLY)) < 0))
-		{
-			free(pr);
-			ft_final_free();
-			return (1);
-		}
-		free(pr);
-	}
-	line_read = NULL;
-	lr = &line_read;
-	while (get_next_line(fd, lr))
-	{
-		ft_sig_set();
-		ft_print_jobs();
-		ft_parse_line(line_read);
-		free(line_read);
+		ft_exe_subshell();
 	}
 	ft_final_free();
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 14:10:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/27 12:54:41 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/02 17:53:27 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	ft_get_cmd_matr(t_listf *lst)
 	t_listf	*cur;
 
 	count = ft_len_list(lst);
-	if (!(g_cmd->cmd_list = (char **)malloc(sizeof(char *) * (count + 12 + 1))))
+	if (!(g_cmd->cmd_list = (char **)malloc(sizeof(char *) * (count + 15 + 1))))
 		exit_shell();
 	j = 0;
 	cur = lst;
@@ -33,19 +33,7 @@ void	ft_get_cmd_matr(t_listf *lst)
 		cur = cur->next;
 		j++;
 	}
-	g_cmd->cmd_list[j] = ft_strdup("exit");
-	g_cmd->cmd_list[j + 1] = ft_strdup("export");
-	g_cmd->cmd_list[j + 2] = ft_strdup("unset");
-	g_cmd->cmd_list[j + 3] = ft_strdup("set");
-	g_cmd->cmd_list[j + 4] = ft_strdup("cd");
-	g_cmd->cmd_list[j + 5] = ft_strdup("type");
-	g_cmd->cmd_list[j + 6] = ft_strdup("printenv");
-	g_cmd->cmd_list[j + 7] = ft_strdup("hash");
-	g_cmd->cmd_list[j + 8] = ft_strdup("jobs");
-	g_cmd->cmd_list[j + 9] = ft_strdup("fg");
-	g_cmd->cmd_list[j + 10] = ft_strdup("bg");
-	g_cmd->cmd_list[j + 11] = ft_strdup("kill");
-	g_cmd->cmd_list[j + 12] = NULL;
+	ft_add_built_to_list(j);
 }
 
 int		ft_get_ind_env(char *s, char **shell)
@@ -111,8 +99,8 @@ t_listf	*ft_add_exe_list(char *paths, int lpath, t_listf *first_list)
 
 t_listf	*ft_create_exe_list(void)
 {
-	int 	j;
-	int 	l;
+	int		j;
+	int		l;
 	char	*paths;
 
 	g_envi->first_list = NULL;
@@ -131,7 +119,7 @@ t_listf	*ft_create_exe_list(void)
 	}
 	if ((paths) && (g_envi->first_list = ft_add_exe_list(&paths[j],
 		l, g_envi->first_list)))
-		free (paths);
+		free(paths);
 	ft_merge_sort(&g_envi->first_list);
 	ft_get_cmd_matr(g_envi->first_list);
 	return (g_envi->first_list);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   sort.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
+/*   By: udraugr- <udraugr-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/13 11:17:05 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/18 20:07:04 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/12 15:57:27 by udraugr-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,22 +105,16 @@ int		ft_check_file(char *find_path, int type)
 		return (-1);
 	if ((access(find_path, F_OK)) == -1)
 	{
-		ft_putstr_fd(g_app_name, 2);
 		if (find_path[0] == '/' || find_path[0] == '.' || find_path[0] == '~')
-			ft_putstr_fd(" : no such file or directory: ", 2);
+			ft_print_msg(" : no such file or directory: ", find_path);
 		else
-			ft_putstr_fd(" : command not found: ", 2);
-		ft_putstr_fd(find_path, 2);
-		ft_putstr_fd("\n", 2);
+			ft_print_msg(" : command not found: ", find_path);
 		ft_set_shell("?", "1");
 		return (-1);
 	}
 	else if ((access(find_path, type)) == -1)
 	{
-		ft_putstr_fd(g_app_name, 2);
-		ft_putstr(" : permission denied: ");
-		ft_putstr(find_path);
-		ft_putstr("\n");
+		ft_print_msg(" : permission denied: ", find_path);
 		ft_set_shell("?", "1");
 		return (-1);
 	}

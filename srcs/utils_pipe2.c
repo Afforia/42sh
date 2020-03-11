@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/07 10:50:36 by wveta             #+#    #+#             */
-/*   Updated: 2019/10/16 12:57:55 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/18 12:04:24 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,114 +35,78 @@ void	ft_parent_close_pipe(int code, int fd0[2], int fd1[2])
 void	ft_parent_pipe_next(t_cmdlist *cur_cmd, int fd0[2],
 		int fd1[2], int flpi)
 {
+	ft_set_pgid(cur_cmd, flpi);
+	ft_if_job(cur_cmd);
+	if (flpi > 0 && cur_cmd->nr == 1)
+		return ;
 	if (flpi > 0 && cur_cmd->nr % 2 == 1)
 		ft_parent_close_pipe(0, fd0, fd1);
 	else if (flpi > 0 && cur_cmd->nr % 2 != 1)
 		ft_parent_close_pipe(1, fd0, fd1);
 }
 
-void	ft_child_pipe_exec(t_cmdlist *cur_cmd, int flpi)
+void	ft_pipe_wait_fin_loop(int *q, t_cmdlist *cur_cmd)
 {
-	int		i;
-	char	*tmp;
-	
-	g_check = 1;
-	if (g_subs_rc == 1)
-		exit(1);
-	if (g_job == 1)
-	{
-		if (g_pgid == 0)
-			g_pgid = cur_cmd->pid;
-		if (flpi == 0)
-			setpgrp();
-		else
-			setpgid(cur_cmd->pid, g_pgid);
-	}
-/*
-	if (g_pgid == 0)
-			g_pgid = getpid();
-	setpgid(getpid(), g_pgid);
-	if (g_job == 0)
-		tcsetpgrp(0, g_pgid);
+	int			status;
+	int			r;
+	int			j;
 
-*/
-	if (flpi > 0)
+	r = 0;
+	while (cur_cmd)
 	{
-		ft_pipe_dup_ch_in(cur_cmd);
-		ft_pipe_dup_ch_out(cur_cmd);
-		if (cur_cmd->here && ft_get_redir_hd(cur_cmd) != 0)
-			exit(1);
-		if (ft_do_redir(cur_cmd) != 0)
-			exit(1);
-		cur_cmd->avcmd = ft_cmd_replays(cur_cmd->avcmd);
-		cur_cmd = ft_local_assig(cur_cmd);
-		if (!(cur_cmd->avcmd[0]))
+		if (cur_cmd->pid != 0)
 		{
-			cur_cmd->locals = ft_put_locals(cur_cmd->locals);
-			exit(0);
-		}
-		if (cur_cmd->built_in == 0)
-		{	
-			if (!(cur_cmd->find_path = ft_get_file_path(
-				cur_cmd->avcmd[0], g_envi->first_list)))
-				cur_cmd->find_path = ft_strdup(cur_cmd->avcmd[0]);
-		}
-		if ((ft_test_built_in(cur_cmd->avcmd[0]) == 1)
-			&& ft_built_in(cur_cmd->avcmd[0], cur_cmd->avcmd, cur_cmd->locals) == 1)
-			exit(g_built_rc);
-	}
-	else
-	{
-		if (cur_cmd->built_in == 0)
-		{
-			if (!(cur_cmd->find_path = ft_get_file_path(
-				cur_cmd->avcmd[0], g_envi->first_list)))
-				cur_cmd->find_path = ft_strdup(cur_cmd->avcmd[0]);
-		}
-		if (cur_cmd->here && ft_get_redir_hd(cur_cmd) != 0)
-			exit(1);
-	}
-	if ((i = ft_test_cmd_file(cur_cmd)) == 0)
-	{
-		ft_locals_to_env(cur_cmd->locals);
-		if ((cur_cmd->nr == 1) && g_subshell == 1)
-		{
-			tmp = ttyname(STDERR_FILENO);
-			i = open(tmp, O_RDONLY , S_IRUSR | S_IWUSR);
-			if (i != -1 && (dup2(i, STDIN_FILENO) == -1))
-				ft_print_msg(": error DUP2 STDIN: ", "subshell");
-		}
-		execve(cur_cmd->find_path, cur_cmd->avcmd, g_envi->env);
-	}
-	exit (1);
-}
-
-void	ft_pipe_wait_ch_fin(t_cmdlist *cur_cmd, t_cmdlist *first_cmd, t_cmdlist *last_cmd, int flpi)
-{
-	int 		i;
-
-	if (g_job == 0)
-		while (1)
-		{	
-			i = 0;
-			cur_cmd = first_cmd;
-			while (cur_cmd)
+			(*q)++;
+			status = 0;
+			if ((j = waitpid(cur_cmd->pid, &status,
+							WNOHANG | WUNTRACED)) == cur_cmd->pid)
 			{
-				if (cur_cmd->pid != 0)
-				{
-					i++;
-				}
-				cur_cmd = cur_cmd->next;
-				if (last_cmd->pid == 0)
-				{
-					if (flpi == 0)
-						first_cmd = ft_redir_io_restore(first_cmd);
-					return ;
-				}
+				r = r + ft_get_cmd_exit_status(status);
+				if (!(cur_cmd->next))
+					(r != 0) ? ft_set_shell("?", "1") : ft_set_shell("?", "0");
+				cur_cmd->pid = 0;
 			}
 		}
-	else
-	{
-		first_cmd = ft_redir_io_restore(first_cmd);
+		cur_cmd = cur_cmd->next;
 	}
+}
+
+void	ft_pipe_wait_ch_fin(t_cmdlist *cur_cmd, t_cmdlist *first_cmd,
+		t_cmdlist *last_cmd, int flpi)
+{
+	int			q;
+
+	if ((g_job == 0 || g_subshell) && flpi > 0)
+	{
+		while (1)
+		{
+			cur_cmd = first_cmd;
+			q = 0;
+			ft_pipe_wait_fin_loop(&q, cur_cmd);
+			if (q == 0)
+			{
+				(void)last_cmd;
+				if (flpi == 0)
+					first_cmd = ft_redir_io_restore(first_cmd);
+				return ;
+			}
+		}
+	}
+	else
+		first_cmd = ft_redir_io_restore(first_cmd);
+}
+
+void	ft_child_pipe_varset(t_cmdlist *cur_cmd)
+{
+	ft_close_g_semafors();
+	g_semafor = cur_cmd->semafor;
+	g_bsemafor = cur_cmd->bsemafor;
+	g_sem_name = cur_cmd->sem_name;
+	g_bsem_name = cur_cmd->bsem_name;
+	g_sem_fl = 1;
+	g_bsem_fl = 1;
+	cur_cmd->semafor = NULL;
+	cur_cmd->bsemafor = NULL;
+	cur_cmd->sem_name = NULL;
+	cur_cmd->bsem_name = NULL;
 }

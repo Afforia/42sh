@@ -5,120 +5,121 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/08/05 18:04:04 by thaley            #+#    #+#             */
-/*   Updated: 2019/09/19 17:28:15 by wveta            ###   ########.fr       */
+/*   Created: 2019/11/19 21:09:13 by thaley            #+#    #+#             */
+/*   Updated: 2019/12/25 17:30:04 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "readline.h"
 
-static void	from_file(char *buf)
+static void	remake_hist_file(char **tmp)
+{
+	int		fd;
+	int		j;
+
+	fd = 0;
+	j = 0;
+	fd = open(g_hist->path, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+	if (fd <= 0)
+		return ;
+	while (tmp[j])
+	{
+		write(fd, tmp[j], ft_strlen(tmp[j]));
+		j++;
+	}
+	close(fd);
+}
+
+char		**remake_hist(void)
 {
 	int		i;
 	int		j;
+	char	**tmp;
 
+	j = 0;
 	i = 0;
-	j = open(g_hist->path, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
-	while ((get_next_line(j, &buf)) > 0)
+	tmp = (char **)malloc(sizeof(char *) * 101);
+	while (++i < 101)
+		tmp[i] = NULL;
+	i = 0;
+	ft_free(g_hist->cmd[i]);
+	g_hist->cmd[i] = NULL;
+	while (g_hist->cmd[++i])
 	{
-		g_hist->cmd[g_hist->amount] = ft_strdup(buf);
-		i = ft_strlen(g_hist->cmd[g_hist->amount]);
-		while (i > -1 && g_hist->cmd[g_hist->amount][i] == 7)
-		{
-			g_hist->cmd[g_hist->amount][i] = '\0';
-			i--;
-		}
-		history_return_n(g_hist->cmd[g_hist->amount]);
-		buf[0] = '\0';
-		g_hist->amount++;
+		tmp[j] = ft_strdup(g_hist->cmd[i]);
+		j++;
+		ft_free(g_hist->cmd[i]);
+		g_hist->cmd[i] = NULL;
 	}
-	close(j);
+	free(g_hist->cmd);
+	g_hist->cmd = NULL;
+	g_hist->amount = j;
+	tmp[j] = NULL;
+	remake_hist_file(tmp);
+	return (tmp);
 }
 
-void		creat_history(void)
+static void	write_in_matr(int len, char *buf)
 {
-	char	*buf;
-	char	*tmp;
+	len = ft_strlen(buf);
+	if (len == 0 && buf[0] == '\0')
+		g_hist->cmd[g_hist->amount] = ft_strfjoin(\
+				g_hist->cmd[g_hist->amount], "\n");
+	else
+		g_hist->cmd[g_hist->amount] = ft_strfjoin(\
+				g_hist->cmd[g_hist->amount], buf);
+	if (len >= 2 && buf[len - 2] == 7)
+		g_hist->amount++;
+	if (g_hist->amount == 100)
+		g_hist->cmd = remake_hist();
+}
 
-	if (!(g_hist = (t_his *)malloc(sizeof(t_his))))
+static void	hist_from_file(void)
+{
+	int		len;
+	int		fd;
+	char	tmp[MAX_CMDS];
+	char	*buf;
+
+	buf = NULL;
+	len = 0;
+	ft_bzero(tmp, MAX_CMDS);
+	fd = open(g_hist->path, O_RDONLY);
+	if (fd < 1)
+		return ;
+	while ((get_next_line(fd, &buf)) > 0)
+	{
+		buf = ft_strfjoin(buf, "\n");
+		write_in_matr(len, buf);
+		free(buf);
+		buf = NULL;
+	}
+	ft_strdel(&buf);
+	close(fd);
+	if (g_hist->cmd[g_hist->amount])
+		free(g_hist->cmd[g_hist->amount]);
+	g_hist->cmd[g_hist->amount] = NULL;
+}
+
+void		create_history(void)
+{
+	char	*tmp;
+	int		i;
+
+	tmp = NULL;
+	i = -1;
+	if (!(g_hist = (t_hist *)malloc(sizeof(t_hist))))
 		mall_check();
-	g_hist->cursor = 0;
 	if (!(g_hist->cmd = (char **)malloc(sizeof(char *) * 101)))
 		mall_check();
-	ft_bzero(g_hist->cmd, 101);
-	if (!(buf = (char *)malloc(sizeof(char) * 4097)))
-		mall_check();
-	ft_bzero(buf, 4097);
-	g_hist->path = ft_alloc_char(500);
-	g_hist->path[0] = '\0';
-	g_hist->amount = 0;
+	while (++i < 101)
+		g_hist->cmd[i] = NULL;
 	if ((tmp = ft_get_my_home()))
 	{
-		g_hist->path = ft_strcat(g_hist->path, tmp);
+		g_hist->path = ft_strjoin(tmp, "/.history");
 		free(tmp);
 	}
-	g_hist->path = ft_strcat(g_hist->path, "/.history");
-	from_file(buf);
+	g_hist->amount = 0;
+	hist_from_file();
 	g_hist->pos = g_hist->amount;
-	free(buf);
-}
-
-int			count_n(void)
-{
-	int		count;
-	int		i;
-
-	count = 0;
-	i = 0;
-	while (i < g_input->input_len)
-	{
-		if (g_input->input[i] == '\n')
-			count++;
-		i++;
-	}
-	if (count > 1)
-		return (1);
-	return (0);
-}
-
-void		history_move(int direct)
-{
-	if (not_move_hist(direct))
-		return ;
-	if (direct && g_hist->pos < g_hist->amount)
-		g_hist->pos++;
-	else if (!direct && g_hist->pos > -1)
-		g_hist->pos--;
-	if (!g_hist->cmd[g_hist->pos] && g_hist->pos == g_hist->amount
-		&& g_input->old_cursor != -1)
-		old_input();
-	else if (g_hist->pos != -1 && g_hist->cmd[g_hist->pos])
-		modify_input(g_hist->cmd[g_hist->pos]);
-	else if (g_hist->pos == -1)
-		g_hist->pos = 0;
-}
-
-void		ft_history_put(void)
-{
-	int		fd;
-	int		i;
-
-	i = 0;
-	fd = open(g_hist->path, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
-	if (fd > 0)
-	{
-		while (g_hist->cmd[i])
-		{
-			write(fd, history_replace_n(g_hist->cmd[i]),
-				ft_strlen(g_hist->cmd[i]));
-			write(fd, "\n", 1);
-			free(g_hist->cmd[i]);
-			i++;
-		}
-		close(fd);
-		free(g_hist->path);
-		free(g_hist->cmd);
-		g_hist->cmd = NULL;
-		free(g_hist);
-	}
 }

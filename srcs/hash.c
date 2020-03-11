@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/02 22:03:52 by thaley            #+#    #+#             */
-/*   Updated: 2019/09/12 14:27:07 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/12 16:47:07 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,12 +80,13 @@ char			*ft_repl_tilda(char *s, int j)
 	{
 		tmp2 = ft_alloc_char(ft_strlen(s) + ft_strlen(tmp) + 1);
 		tmp2[0] = '\0';
-		tmp2 = ft_strfjoin(tmp2, tmp);
+		tmp2 = ft_strcat(tmp2, tmp);
+		free(tmp);
 		tmp2 = ft_strcat(tmp2, s + j);
 		free(s);
 		return (tmp2);
 	}
-	free (s);
+	free(s);
 	return (tmp);
 }
 

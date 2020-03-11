@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/10/16 13:55:27 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/16 21:41:34 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,8 @@ void	ft_insert_job(t_job *cur_job)
 	tmp = g_job_first;
 	while (tmp)
 	{
-		if (tmp == g_job_first && tmp->num > 1)
+		if (tmp == g_job_first && tmp->num > 1 && ((cur_job->num = 1)))
 		{
-			cur_job->num = 1;
 			cur_job->next = tmp;
 			g_job_first = cur_job;
 			return ;
@@ -33,14 +32,12 @@ void	ft_insert_job(t_job *cur_job)
 			tmp->next = cur_job;
 			return ;
 		}
-		else if (!(tmp->next) && tmp != cur_job)
+		else if (!(tmp->next) && tmp != cur_job && ((tmp->next = cur_job)))
 		{
-			tmp->next = cur_job;
 			cur_job->num = tmp->num + 1;
 			return ;
 		}
-		else
-			tmp = tmp->next;
+		tmp = tmp->next;
 	}
 }
 
@@ -50,6 +47,8 @@ void	ft_free_job(t_job *del)
 		free(del->orig_cmd);
 	if (del->first_proc)
 		ft_del_proc_list(del->first_proc);
+	if (del->stat_job)
+		free(del->stat_job);
 	free(del);
 }
 
@@ -93,9 +92,7 @@ t_job	*ft_new_job(t_cmdlist *cur_cmd)
 	cur_job->next = NULL;
 	cur_job->first_proc = NULL;
 	cur_job->orig_cmd = NULL;
-	if (g_pgid == 0)
-		g_pgid = cur_cmd->pid_z;
-	cur_job->pgid = g_pgid;
+	cur_job->pgid = cur_cmd->pid_z;
 	cur_job->ready = 0;
 	return (cur_job);
 }
@@ -105,7 +102,7 @@ int		ft_if_job(t_cmdlist *cur_cmd)
 	t_job	*cur_job;
 
 	cur_job = NULL;
-	if (g_job == 1)
+	if (g_job == 1 && g_subst == 0)
 	{
 		if (cur_cmd->nr == 1)
 		{
@@ -122,7 +119,7 @@ int		ft_if_job(t_cmdlist *cur_cmd)
 			ft_set_job_plus();
 			ft_print_start_job(cur_job);
 		}
-		ft_add_proc(cur_cmd);
+		ft_add_proc(cur_cmd, cur_job);
 	}
 	return (1);
 }

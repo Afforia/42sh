@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/26 15:38:41 by wveta             #+#    #+#             */
-/*   Updated: 2019/10/16 17:22:06 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/02 15:25:47 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,46 +21,50 @@ void	ft_restore_io(void)
 	if (g_stderr > -1)
 		dup2(g_stderr, STDERR_FILENO);
 }
-void	ft_job_fg(t_job *j)
+
+void	ft_job_fg_pstat(t_proc *p, t_job *j)
 {
-//	int 	status;
-//	pid_t	pid;
-	tcsetpgrp(g_terminal, j->pgid);
-	if (kill(j->pgid, SIGCONT) < 0)
+	while (p)
 	{
-    	ft_print_msg(": SIGCONT error ", " ");
-		return ;
+		if (p->stopped == 1)
+			break ;
+		else if (p->completed == 1 && (!(p->next)))
+		{
+			ft_set_cmd_exit_status(p->status);
+			break ;
+		}
+		if (p->next)
+			p = p->next;
+		else
+			p = j->first_proc;
 	}
-	ft_set_job_cont(j);
-	while (1)
-	{
-//		if ((pid = waitpid (WAIT_ANY, &status, WNOHANG | WUNTRACED)) > 0)
-//			ft_test_job_status(pid, status);
-			if ((ft_job_stopped(j)) || (ft_job_completed(j)))
-				break ;
-	}
-	tcsetpgrp(g_terminal, g_parent_pid);
 }
 
-int		ft_cmd_fg(char **av)
+void	ft_job_fg(t_job *j)
 {
-	t_job	*j;
-	int 	i;
-	char	*num;
+	t_proc			*p;
+	struct termios	tmodes;
 
-	j = g_job_first;
-	i = 0;
-	while(j)
+	tcgetattr(0, &tmodes);
+	tcsetpgrp(0, j->pgid);
+	p = j->first_proc;
+	while (p)
 	{
-		num = ft_num_to_str(j->num);	
-		if (((av && av[1] && ft_strcmp(av[1], num) == 0) ||
-			((!(av[1]) && j->flag == '+'))) && ((i = 1)))
-			ft_job_fg(j);
-		free(num);
-		if (i == 1)
-			break ;
-		j = j->next;
+		kill(p->pid, SIGCONT);
+		if (p->completed != 1)
+		{
+			p->stopped = 0;
+		}
+		p = p->next;
 	}
+	p = j->first_proc;
+	ft_job_fg_pstat(p, j);
+	tcsetpgrp(0, getpid());
+	tcsetattr(0, TCSADRAIN, &tmodes);
+}
+
+void	ft_set_fg_rc(int i, char **av)
+{
 	if (i == 0)
 	{
 		if (av[1])
@@ -70,25 +74,26 @@ int		ft_cmd_fg(char **av)
 		ft_set_shell("?", "1");
 	}
 	else
-		ft_set_shell("?", "0");		
-	return (1);
+		ft_set_shell("?", "0");
 }
 
-void	ft_set_job_cont(t_job *j)
+int		ft_cmd_fg(char **av)
 {
-	t_proc *p;
+	t_job	*j;
+	int		i;
+	char	*num;
 
-	if (j)
+	j = g_job_first;
+	i = 0;
+	while (j && i == 0)
 	{
-		if (j->stat_job)
-			free(j->stat_job);
-		j->stat_job = ft_strdup("Running           ");
-		p = j->first_proc;
-		while (p)
-		{
-			if (p->completed != 1 && p->stopped == 1)
-				p->stopped = 0;
-			p = p->next;
-		}
+		num = ft_num_to_str(j->num);
+		if (((av && av[1] && ft_strcmp(av[1], num) == 0) ||
+			((!(av[1]) && j->flag == '+'))) && ((i = 1)))
+			ft_job_fg(j);
+		free(num);
+		j = j->next;
 	}
+	ft_set_fg_rc(i, av);
+	return (1);
 }

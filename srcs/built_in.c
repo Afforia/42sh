@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/26 15:38:41 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/27 12:54:41 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/19 17:37:27 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,19 +51,20 @@ void		ft_upr_sym(int flag, char *str)
 		s = str;
 		while (*s)
 		{
-			if (s[0] == '\\')
+			if (s[0] == '\\' && (tmp = ft_strchr(UPR0, s[1])))
 			{
-				if ((tmp = ft_strchr(UPR0, s[1])))
-				{
-					s[0] = tmp - UPR0;
-					ft_strcpy(s + 1, s + 2);
-					len--;
-				}
+				s[0] = tmp - UPR0;
+				ft_strcpy(s + 1, s + 2);
+				len--;
 			}
 			s++;
 		}
 	}
-	write(STDOUT_FILENO, str, len);
+	if (len > 0 && write(STDOUT_FILENO, str, len) <= 0)
+	{
+		ft_print_msg(": echo:", " Bad file descriptor");
+		ft_set_shell("?", "1");
+	}
 }
 
 int			ft_echo(char **av)
@@ -76,6 +77,7 @@ int			ft_echo(char **av)
 	j = 0;
 	flag[0] = 0;
 	flag[1] = 0;
+	ft_set_shell("?", "0");
 	while (av[i])
 	{
 		if (ft_echo_flag(av[i], &flag[0], &flag[1]) == 1)
@@ -90,52 +92,53 @@ int			ft_echo(char **av)
 	}
 	if (flag[0] != 1)
 		ft_putstr("\n");
-	ft_set_shell("?", "0");
 	return (1);
+}
+
+int			ft_built_in2(char *path, char **av)
+{
+	if (path && ft_strcmp(path, "jobs") == 0)
+		return (ft_cmd_jobs(av));
+	else if (path && ft_strcmp(path, "fg") == 0)
+		return (ft_cmd_fg(av));
+	else if (path && ft_strcmp(path, "bg") == 0)
+		return (ft_cmd_bg(av));
+	else if (path && ft_strcmp(path, "kill") == 0)
+		return (ft_cmd_kill(av));
+	else if (path && ft_strcmp(path, "alias") == 0)
+		return (ft_alias(av));
+	else if (path && ft_strcmp(path, "unalias") == 0)
+		return (ft_unalias(av));
+	else if (path && ft_strcmp(path, "test") == 0)
+	{
+		bin_test(av);
+		return (1);
+	}
+	return (0);
 }
 
 int			ft_built_in(char *path, char **av, char **locals)
 {
 	g_built_rc = 0;
-	if (path && ft_strequ(path, "exit") == 1 )
-		return(ft_exit(av));
+	ft_set_shell("?", "0");
+	if (path && ft_strequ(path, "exit") == 1)
+		return (ft_exit(av));
 	else if (path && g_envi->env && ft_strcmp(path, "set") == 0)
 		return (ft_print_env());
-	else if (path && ft_strncmp(path, "cd", 2) == 0)
+	else if (path && ft_strcmp(path, "cd") == 0)
 		return (ft_built_cd(av, locals));
-	else if (path && ft_strncmp(path, "export", 6) == 0)
+	else if (path && ft_strcmp(path, "export") == 0)
 		return (ft_export(av));
-	else if (path && ft_strncmp(path, "unset", 5) == 0)
+	else if (path && ft_strcmp(path, "unset") == 0)
 		return (ft_unset_env(av));
-	else if (path && ft_strncmp(path, "echo", 4) == 0)
+	else if (path && ft_strcmp(path, "echo") == 0)
 		return (ft_echo(av));
-	else if (path && ft_strncmp(path, "type", 4) == 0)
+	else if (path && ft_strcmp(path, "type") == 0)
 		return (ft_type(av));
-	else if (path && ft_strncmp(path, "printenv", 8) == 0)
+	else if (path && ft_strcmp(path, "printenv") == 0)
 		return (ft_printenv(av));
-	else if (path && ft_strncmp(path, "hash", 4) == 0)
+	else if (path && ft_strcmp(path, "hash") == 0)
 		return (ft_cmd_hash(av));
-	else if (path && ft_strncmp(path, "jobs", 4) == 0)
-		return (ft_cmd_jobs(av));
-	else if (path && ft_strncmp(path, "fg", 2) == 0)
-		return (ft_cmd_fg(av));
-	else if (path && ft_strncmp(path, "bg", 2) == 0)
-		return (ft_cmd_bg(av));
-	else if (path && ft_strncmp(path, "kill", 4) == 0)
-		return (ft_cmd_kill(av));
-	return (0);
-}
-
-char		*ft_get_app_name(char *s)
-{
-	int		j;
-
-	j = ft_strlen(s) - 1;
-	while (j >= 0 && s[j])
-	{
-		if (s[j] == '/')
-			break ;
-		j--;
-	}
-	return (s + j + 1);
+	else
+		return (ft_built_in2(path, av));
 }

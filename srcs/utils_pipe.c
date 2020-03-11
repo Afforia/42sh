@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_pipe.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
+/*   By: udraugr- <udraugr-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/07 10:50:36 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/04 21:23:35 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/11 09:44:28 by udraugr-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,9 +71,9 @@ void	ft_pipe_dup_ch_in(t_cmdlist *cur_cmd)
 {
 	if (cur_cmd->fd_pipe_in[0] != -1 && cur_cmd->fd_pipe_in[0] != 0)
 	{
-		if (dup2(cur_cmd->fd_pipe_in[0], 0) == -1)
+		if (dup2(cur_cmd->fd_pipe_in[0], STDIN_FILENO) == -1)
 		{
-			ft_print_msg(" : Error relink to STDIN: ", "DUP2");
+			ft_print_msg(" : Error DUP to STDIN: ", "DUP2");
 			exit(0);
 		}
 		close(cur_cmd->fd_pipe_in[0]);
@@ -86,9 +86,9 @@ void	ft_pipe_dup_ch_out(t_cmdlist *cur_cmd)
 {
 	if (cur_cmd->fd_pipe_out[1] != -1 && cur_cmd->fd_pipe_out[1] != 1)
 	{
-		if (dup2(cur_cmd->fd_pipe_out[1], 1) == -1)
+		if (dup2(cur_cmd->fd_pipe_out[1], STDOUT_FILENO) == -1)
 		{
-			ft_print_msg(" : Error relink to STDOUT: ", "DUP2");
+			ft_print_msg(" : Error DUP to STDOUT: ", "DUP2");
 			exit(0);
 		}
 		close(cur_cmd->fd_pipe_out[1]);

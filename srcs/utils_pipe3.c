@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/07 10:50:36 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/28 15:01:41 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/26 17:09:24 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,21 +68,13 @@ int		ft_set_fd_pipes_2(t_pipe *p_head, int fd0[2], int fd1[2])
 
 int		fd_set_nopipe(t_pipe *p_head)
 {
-	if (ft_do_redir(p_head->cur_cmd) != 0)
-		return (-1);
-	p_head->cur_cmd = ft_local_assig(p_head->cur_cmd);
-	if (!(p_head->cur_cmd->avcmd[0]))
-	{
-		p_head->cur_cmd->locals = ft_put_locals(p_head->cur_cmd->locals);
-		return (-1);
-	}
-	p_head->cur_cmd->avcmd = ft_cmd_replays(p_head->cur_cmd->avcmd);
-	if (g_subs_rc == 1)
+	if (ft_set_nopipe_start(p_head->cur_cmd) != 0)
 		return (-1);
 	if (p_head->cur_cmd->built_in == 0)
 	{
 		if (!(p_head->cur_cmd->find_path = ft_get_file_path(
-			p_head->cur_cmd->avcmd[0], g_envi->first_list)))
+			p_head->cur_cmd->avcmd[0], g_envi->first_list))
+			&& ft_strlen(p_head->cur_cmd->avcmd[0]) > 0)
 			p_head->cur_cmd->find_path = ft_strdup(p_head->cur_cmd->avcmd[0]);
 	}
 	else
@@ -91,7 +83,9 @@ int		fd_set_nopipe(t_pipe *p_head)
 			exit(1);
 	}
 	ft_set_shell("_", p_head->cur_cmd->avcmd[0]);
-	if (ft_built_in(p_head->cur_cmd->avcmd[0], p_head->cur_cmd->avcmd, p_head->cur_cmd->locals) == 1)
+	if (ft_built_in(p_head->cur_cmd->avcmd[0],
+					p_head->cur_cmd->avcmd,
+					p_head->cur_cmd->locals) == 1)
 	{
 		p_head->cur_cmd = ft_redir_io_restore(p_head->cur_cmd);
 		return (-1);
@@ -99,36 +93,30 @@ int		fd_set_nopipe(t_pipe *p_head)
 	return (0);
 }
 
-void	ft_parent_wait(t_pipe *p_head, int flpi/*, t_cmdlist *first_cmd*/)
+void	ft_parent_wait(t_pipe *p_head, int flpi)
 {
-/*	int		status;
-	int		flag;
-	char	*tmp;*/
+	int		status;
 
-//	if (g_job == 1 && g_subshell == 0)
-//		return ;
-/*	if (flpi == 0)
+	if (g_semafor && g_sem_fl)
+		sem_wait(g_semafor);
+	ft_add_semafor(p_head);
+	if (g_bsemafor && g_bsem_fl)
 	{
-		flag = 0;
-		tmp = malloc(sizeof(char) * 1);
-		tmp[0] = '\0';
-		while (flag == 0)
-		{
-			waitpid(p_head->first_cmd->pid, &status, 0);
-			if (WIFEXITED(status) 
-			&& (flag =1)
-			)
-				ft_set_shell("?", "0");
-			else if (WIFSTOPPED(status) && (flag = 1))
-				ft_set_shell("?", ft_putfnbr(WSTOPSIG(status), tmp));
-			else if (WIFSIGNALED(status) && (flag = 1))
-				ft_set_shell("?", ft_putfnbr(WTERMSIG(status), tmp));
-			else
-				ft_set_shell("?", "1");			
-		}
-		free(tmp);
-		first_cmd = ft_redir_io_restore(first_cmd);
+		sem_post(g_bsemafor);
+		ft_close_g_semafors();
+	}
+	ft_sig_set();
+	if ((g_job == 0) && flpi == 0)
+	{
+		while (p_head->first_cmd->pid != 0)
+			status = 0;
+		status = p_head->first_cmd->status;
+		ft_set_cmd_exit_status(status);
+		p_head->first_cmd = ft_redir_io_restore(p_head->first_cmd);
 		return ;
-	}*/
-	ft_pipe_wait_ch_fin(p_head->cur_cmd, p_head->first_cmd, p_head->last_cmd, flpi);
+	}
+	ft_pipe_wait_ch_fin(p_head->cur_cmd,
+						p_head->first_cmd,
+						p_head->last_cmd,
+						flpi);
 }

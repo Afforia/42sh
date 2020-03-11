@@ -6,11 +6,25 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/30 14:10:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/08/31 16:29:10 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/25 14:03:18 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
+
+char	*ft_chng_slash(char *s)
+{
+	int i;
+
+	i = 0;
+	if (s)
+	{
+		i = ft_strlen(s) - 1;
+		if (i > 0 && s[i] == '/')
+			s[i] = '\0';
+	}
+	return (s);
+}
 
 int		ft_check_dir_exist(char *find_path)
 {
@@ -72,7 +86,7 @@ char	*ft_tst_cdpath(char *str)
 
 	if (!(str) || (str[0] == '/' || str[0] == '.'
 		|| !(cdpath = ft_get_env("CDPATH"))))
-		return (str);
+		return (ft_chng_slash(str));
 	j = 0;
 	l = 0;
 	ret = ft_tst_cdpath_loop(cdpath, str, j, l);
@@ -80,7 +94,9 @@ char	*ft_tst_cdpath(char *str)
 	if (ret)
 	{
 		free(str);
+		ret = ft_chng_slash(ret);
 		return (ret);
 	}
+	str = ft_chng_slash(str);
 	return (str);
 }

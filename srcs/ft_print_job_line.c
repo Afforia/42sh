@@ -6,47 +6,54 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/10/15 11:48:52 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/11 20:50:28 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
+void	ft_print_one_line(t_proc *proc, t_job *job, int *len)
+{
+	char	*num;
+	char	*tmp;
+
+	if (proc == job->first_proc)
+	{
+		if ((tmp = ft_print_job_pref(job)))
+			*len = ft_strlen(tmp);
+	}
+	else
+	{
+		tmp = ft_strdup("                ");
+		tmp[*len] = '\0';
+	}
+	num = ft_num_to_str(proc->pid);
+	tmp = ft_strfjoin(tmp, num);
+	free(num);
+	tmp = ft_strfjoin(tmp, " ");
+	if (proc == job->first_proc)
+		tmp = ft_strfjoin(tmp, job->stat_job);
+	else
+		tmp = ft_strfjoin(tmp, "                    ");
+	tmp = ft_strfjoin(tmp, proc->argv[0]);
+	tmp = ft_strfjoin(tmp, "\n");
+	ft_putstr(tmp);
+	free(tmp);
+}
+
 void	ft_print_job_line(t_job *job, int fl)
 {
 	char	*tmp;
-	char	*num;
 	int		len;
 	t_proc	*proc;
 
+	len = 0;
 	if (fl == 1)
 	{
 		proc = job->first_proc;
 		while (proc)
 		{
-			if (proc == job->first_proc)
-			{
-				len = 0;
-				if ((tmp = ft_print_job_pref(job)))
-					len = ft_strlen(tmp);
-			}
-			else
-			{
-				tmp = ft_strdup("                ");
-				tmp[len] = '\0';
-			}
-			num = ft_num_to_str(proc->pid);
-			tmp = ft_strfjoin(tmp, num);
-			free(num);
-			tmp = ft_strfjoin(tmp, " ");
-			if (proc == job->first_proc)
-				tmp = ft_strfjoin(tmp, job->stat_job);
-			else
-				tmp = ft_strfjoin(tmp,"                    ");
-			tmp = ft_strfjoin(tmp, proc->argv[0]);
-			tmp = ft_strfjoin(tmp, "\n");
-			ft_putstr(tmp);
-			free(tmp);
+			ft_print_one_line(proc, job, &len);
 			proc = proc->next;
 		}
 	}

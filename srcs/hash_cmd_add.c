@@ -6,13 +6,13 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/02 22:03:52 by thaley            #+#    #+#             */
-/*   Updated: 2019/09/13 19:15:01 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/26 23:28:36 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-void	ft_hash_cmd_add(char *path, char *name)
+void	ft_hash_cmd_add(char *path, char *name, int num)
 {
 	t_listh *tmp;
 
@@ -32,7 +32,7 @@ void	ft_hash_cmd_add(char *path, char *name)
 	tmp->file = ft_strdup(name);
 	tmp->path = ft_strdup(path);
 	tmp->hash = hashly(name);
-	tmp->hashcount = 0;
+	tmp->hashcount = num;
 	tmp->next = g_envi->hash_first;
 	g_envi->hash_first = tmp;
 }
@@ -51,9 +51,10 @@ char	*ft_get_hash_path(char *path)
 	char			*ret;
 	unsigned int	hash;
 
-	if (!(path) || !(cur = g_envi->hash_first))
+	if (!(path))
 		return (NULL);
 	hash = hashly(path);
+	cur = g_envi->hash_first;
 	while (cur)
 	{
 		if (hash == cur->hash && ft_strequ(path, cur->file) == 1)
@@ -65,4 +66,11 @@ char	*ft_get_hash_path(char *path)
 		cur = cur->next;
 	}
 	return (NULL);
+}
+
+void	ft_set_andor(int i, t_quoteflag *f)
+{
+	f->i_cmd = f->i_cmd + f->i + 2;
+	f->i = -1;
+	g_and_or = i;
 }

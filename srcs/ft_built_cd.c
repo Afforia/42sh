@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/30 14:10:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/18 15:08:34 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/23 20:54:43 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,7 @@ void		ft_cd(char *path2, int flag, char **locals)
 	char *p;
 
 	p = ft_strdup(path2);
-	if (!((tmp = ft_get_env2("HOME", locals))) || !((tmp = ft_get_env("HOME"))))
-	{
-		if (!(tmp = ft_strnew(255)))
-			exit_shell(1);
-		getcwd(tmp, 255);
-	}
+	tmp = ft_get_lpwd(locals);
 	if ((p = ft_tst_cdpath(p)) && (ft_check_dir(p) == 0) && (chdir(p) == 0))
 	{
 		if (!(full = ft_strnew(255)))
@@ -117,15 +112,13 @@ int			ft_built_cd(char **av, char **locals)
 
 	i = 0;
 	flag = 0;
-	ft_set_shell("?", "0");
 	while (av[++i])
 	{
 		if ((ft_cd_flag(av[i], &flag) == 1))
 		{
-			if ((av[i + 1]) && av[i + 1][0] != '\0')
+			if ((av[i + 1]) && av[i + 1][0] != '\0' && ((g_built_rc = 1)))
 			{
-				ft_putstr_fd("cd : too many arguments\n", 2);
-				g_built_rc = 1;
+				ft_print_msg(" :cd :", " too many arguments");
 				ft_set_shell("?", "1");
 				return (1);
 			}

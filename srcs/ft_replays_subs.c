@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/17 17:28:44 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/27 16:17:22 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,21 @@ int		ft_ret_subs(char *str, int i)
 int		ft_test_sub(char *str, int i)
 {
 	int j;
+	int	fl;
 
 	j = 0;
+	fl = 0;
 	if (i > 0)
 	{
-		while (j <= i)
+		while (j <= i && str[j])
 		{
-			if (ft_strchr("!@\"\'^*()\\.$", str[j]))
+			if (fl == 0 && str[j] == '}')
+				fl = 1;
+			else if (fl == 0 && (ft_strchr("!@\"\'^()\\.$", str[j])))
 				return (ft_ret_subs(str, i));
+			else if (fl == 1 && str[j] == '$' && ft_check_ekran(str, j) == 0
+			&& str[j + 1] && str[j + 1] == '{')
+				fl = 0;
 			j++;
 		}
 		return (0);
@@ -44,31 +51,29 @@ int		ft_test_sub(char *str, int i)
 	return (ft_ret_subs(str, i));
 }
 
-char	*ft_get_parm_simple(char *s, int *k, int i)
+char	*ft_get_parm_simple(char *tmp)
 {
-	char	*tmp;
 	char	*val;
-	int		len;
 
-	tmp = ft_alloc_char(i - 1);
-	tmp = ft_strncpy(tmp, s + *k + 2, i - 2);
-	tmp[i - 2] = '\0';
-	i = i + 1;
-	len = 0;
 	if (!(val = ft_get_env(tmp)))
 		val = ft_strdup("");
-	len = ft_strlen(val);
 	free(tmp);
-/*	tmp = ft_alloc_char(ft_strlen(s) + len - (i - 1) + 1);
-	tmp[0] = '\0';
-	tmp = ft_strncat(tmp, s, *k);
-	if (len > 0 && ((tmp = ft_strcat(tmp, val))))
-		free(val);
-	tmp = ft_strcat(tmp, s + *k + i);*/
-//	if (len == 0 && (*k) > 0)
-//		(*k)--;
-//	return (tmp);
 	return (val);
+}
+
+char	*ft_get_norm_tmp(char *s, int *k, char *val, int i)
+{
+	char *tmp;
+
+	if (*k > 0)
+	{
+		tmp = ft_strndup(s, *k);
+		tmp = ft_strfjoin(tmp, val);
+	}
+	else
+		tmp = ft_strdup(val);
+	tmp = ft_strfjoin(tmp, s + *k + i);
+	return (tmp);
 }
 
 char	*ft_repl_env(char *s, int *k)
@@ -77,24 +82,22 @@ char	*ft_repl_env(char *s, int *k)
 	char	*tmp;
 	char	*val;
 
-	if (s[*k + 1] == '{' && ((i = (ft_strchr(s + *k, '}') - (s + *k))) > 1))
+	if (s[*k + 1] == '{' && (i = ft_strlen(s + *k) - 1))
 		return (ft_repl_subs(s, k, i));
+	if (!(s[*k + 1] == '_' || ft_isalpha(s[*k + 1]) || s[*k + 1] == '?'))
+		return (s);
 	i = ft_repl_sym(s, *k);
-	tmp = ft_alloc_char(i);
-	tmp = ft_strncpy(tmp, s + *k + 1, i - 1);
-	tmp[i - 1] = '\0';
+	tmp = ft_strndup(s + *k + 1, i - 1);
 	if ((val = ft_get_env(tmp)))
 	{
 		free(tmp);
-		tmp = ft_alloc_char(ft_strlen(s) + ft_strlen(val) - (i - 1) + 1);
-		tmp[0] = '\0';
-		tmp = ft_strncat(tmp, s, *k);
-		tmp = ft_strcat(tmp, val);
-		tmp = ft_strcat(tmp, s + *k + i);
+		tmp = ft_get_norm_tmp(s, k, val, i);
 		free(val);
 		free(s);
 		return (tmp);
 	}
+	else
+		s[*k] = '\0';
 	free(tmp);
 	return (s);
 }

@@ -3,64 +3,71 @@
 /*                                                        :::      ::::::::   */
 /*   cursor.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
+/*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/08/05 20:27:22 by thaley            #+#    #+#             */
-/*   Updated: 2019/08/31 18:20:50 by wveta            ###   ########.fr       */
+/*   Created: 2019/12/26 19:58:16 by thaley            #+#    #+#             */
+/*   Updated: 2019/12/26 20:00:51 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "readline.h"
 
-t_cursor	get_cursor_pos(void)
+int			take_curs(void)
 {
-	t_cursor	cursor;
-	char		pos[20];
-	int			ret;
+	int		curs;
+	int		i;
+	char	buf[20];
 
-	ft_bzero(pos, 20);
+	i = 0;
+	ft_bzero(buf, 20);
 	ft_putstr_fd("\e[6n", STDIN_FILENO);
-	ret = read(STDIN_FILENO, pos, 20);
-	if (pos[0] != '\e')
+	read(STDIN_FILENO, &buf, 20);
+	while (buf[i])
 	{
-		g_input->head = pos[0];
-		ft_bzero(pos, 20);
-		ft_putstr_fd("\e[6n", STDIN_FILENO);
-		ret = read(STDIN_FILENO, pos, 20);
+		i++;
+		if (buf[i - 1] == ';')
+			break ;
 	}
-	pos[ret] = 0;
-	ret = 2;
-	cursor.row = ft_atoi(pos + ret);
-	while (ft_isdigit(pos[ret]))
-		ret++;
-	cursor.col = ft_atoi(pos + ret + 1);
-	return (cursor);
+	curs = ft_atoi(buf + i);
+	return (curs);
 }
 
-void		update_cursor(void)
+char		*check_curs_pos(int *save_curs, char *buf, char *str, char *tmp)
 {
-	int		x;
-	int		y;
+	if (g_input->input_len != g_input->curs_pos - g_input->prompt_len)
+	{
+		ft_strncpy(buf, g_input->input, g_input->curs_pos\
+					- g_input->prompt_len);
+		if (str[0] != '\0')
+		{
+			tmp = ft_strjoin(str, g_input->input +\
+			g_input->curs_pos - g_input->prompt_len);
+			*save_curs = g_input->curs_pos + 1;
+		}
+		else
+		{
+			tmp = ft_strdup(g_input->input +\
+			g_input->curs_pos - g_input->prompt_len);
+			*save_curs = g_input->curs_pos;
+		}
+		ft_bzero(g_input->input, MAX_CMDS);
+		ft_strcpy(g_input->input, buf);
+		g_input->input_len = g_input->curs_pos - g_input->prompt_len;
+	}
+	else
+		tmp = ft_strdup(str);
+	return (tmp);
+}
 
-	if (g_input->cursor.col + g_input->cursor_pos == g_input->ws.ws_col)
-		x = g_input->ws.ws_col;
+int			temp_cursor(void)
+{
+	int		curs;
+
+	curs = 0;
+	if (g_input->multiline.pos == 0)
+		curs = g_input->curs_pos;
 	else
-		x = (g_input->cursor.col + g_input->cursor_pos) % g_input->ws.ws_col;
-	if (g_input->cursor.col + g_input->cursor_pos == g_input->ws.ws_col)
-		y = g_input->cursor.row;
-	else
-		y = g_input->cursor.row + ((g_input->cursor.col + g_input->cursor_pos)
-		/ g_input->ws.ws_col);
-	if (x == 0)
-	{
-		y--;
-		x = g_input->ws.ws_col;
-	}
-	if (y > g_input->ws.ws_row)
-	{
-		y--;
-		g_input->cursor.row--;
-		ft_putstr_fd(tgetstr("sf", NULL), STDIN_FILENO);
-	}
-	ft_putstr_fd(tgoto(tgetstr("cm", NULL), x - 1, y - 1), STDIN_FILENO);
+		curs = g_input->curs_pos -\
+		g_input->multiline.start[g_input->multiline.pos];
+	return (curs);
 }

@@ -6,19 +6,21 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/19 21:47:27 by thaley            #+#    #+#             */
-/*   Updated: 2019/12/11 20:12:16 by thaley           ###   ########.fr       */
+/*   Updated: 2019/12/26 18:13:29 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "readline.h"
 
-void		bad_fd_error(int fd, char *tmp)
+int			check_input(char *str, int i)
 {
-	if (fd == 1)
-		ft_print_msg(" : Error open STDOUT: ", tmp);
-	else
-		ft_print_msg(" : Error open STDERR: ", tmp);
-	exit(EXIT_FAILURE);
+	while (i >= 0)
+	{
+		if (!ft_isspace(str[i]))
+			return (1);
+		i--;
+	}
+	return (0);
 }
 
 void		add_to_hist(char *str)
@@ -26,8 +28,9 @@ void		add_to_hist(char *str)
 	int		len;
 	int		fd;
 
-	len = 0;
 	len = ft_strlen(str) + 2;
+	if (!check_input(str, len - 3))
+		return ;
 	if (g_hist->amount == 100)
 		g_hist->cmd = remake_hist();
 	g_hist->cmd[g_hist->amount] = ft_strnew(len);
@@ -82,12 +85,10 @@ char		*return_func(char *str, char *input)
 		tmp = ft_strdup(input);
 		tmp = check_backslash(tmp);
 	}
+	if (str[0] == 3 && !str[1] && g_input->heredoc)
+	{
+		tmp = ft_strnew(1);
+		tmp[0] = 3;
+	}
 	return (tmp);
-}
-
-void		mall_check(void)
-{
-	go_end_pos();
-	ft_putstr_fd("ERROR: Cannot allocate memory.", STDERR_FILENO);
-	return_func("\0", "exit");
 }

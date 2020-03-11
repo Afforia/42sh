@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/06 14:40:31 by wveta             #+#    #+#             */
-/*   Updated: 2019/10/16 17:32:01 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/27 13:29:05 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,12 @@ int		ft_fd_dup_close(int in_fd, int i, int j, t_cmdlist *cmd)
 	}
 	cmd->fd0 = in_fd;
 	close(in_fd);
-	if (j == 0)
+	if (g_redir_block == 1 && g_parent_pid != getpid())
+		close(STDIN_FILENO);
+	if (j == 0 && cmd->avcmd[i][j] == '<')
 		cmd->avcmd[i][j] = '\0';
+	(void)j;
+	(void)i;
 	return (ret);
 }
 
@@ -61,6 +65,11 @@ void	ft_init_curcmd(t_cmdlist *cur_cmd)
 		cur_cmd->locals = NULL;
 		cur_cmd->find_path = NULL;
 		cur_cmd->pid_z = 0;
+		cur_cmd->status = 0;
+		cur_cmd->semafor = NULL;
+		cur_cmd->sem_name = NULL;
+		cur_cmd->bsemafor = NULL;
+		cur_cmd->bsem_name = NULL;
 	}
 }
 
@@ -78,6 +87,7 @@ void	ft_set_cmd(t_pipe *p_head)
 		p_head->cur_cmd->nr = p_head->last_cmd->nr + 1;
 		p_head->last_cmd = p_head->cur_cmd;
 	}
+	ft_new_semafor(p_head->cur_cmd);
 }
 
 int		ft_test_cmd_pipe(char **av, int start, t_pipe *p)

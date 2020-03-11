@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/23 11:14:54 by wveta             #+#    #+#             */
-/*   Updated: 2019/08/29 13:06:41 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/26 13:35:39 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,5 +48,22 @@ char	*ft_calc_full_path(char *s)
 	}
 	free(s);
 	s = tmp;
+	return (s);
+}
+
+char	*ft_calc_in_calc(char *s)
+{
+	char	**ret;
+
+	if (!s)
+		return (s);
+	if (!(ret = (char **)malloc(sizeof(char *) * 2)))
+		exit(1);
+	ret[0] = ft_strdup(s);
+	ret[1] = NULL;
+	ret = ft_all_calc_tst(ret);
+	free(s);
+	s = ft_strdup(ret[0]);
+	ft_free_char_matr(ret);
 	return (s);
 }

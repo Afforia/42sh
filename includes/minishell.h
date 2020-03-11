@@ -6,16 +6,14 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 11:01:23 by wveta             #+#    #+#             */
-/*   Updated: 2019/10/16 17:22:06 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/27 17:18:41 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
-
 # include <errno.h>
 # include <string.h>
-
 # include <unistd.h>
 # include <stdlib.h>
 # include <stdio.h>
@@ -24,12 +22,16 @@
 # include <signal.h>
 # include <sys/types.h>
 # include <pwd.h>
+# include <uuid/uuid.h>
 # include <sys/stat.h>
 # include <setjmp.h>
 # include <fcntl.h>
 # include <termios.h>
-# include <../readline/readline.h>
-# include <readline/history.h>
+# include <stdbool.h>
+# include <semaphore.h>
+# include <time.h>
+# include "../readline/readline.h"
+# include "readline/history.h"
 # include "../libft/libft.h"
 # define RED		"\x1B[31m"
 # define GRN		"\x1B[32m"
@@ -56,11 +58,44 @@
 # define CLOBBER	">|"
 # define LESSGREAT	"<>"
 # define UPR0		"0      abtnvfr            e"
+# define BIN_TEST_UN_OPTIONS "bcdefghLnprSstuwxz"
+# define BIN_TEST_ERR_BIN ": binary operator expected: "
+# define BIN_TEST_ERR_UN ": unary operator expected: "
+# define BIN_TEST_ERR_TM ": too many argumanets"
+# define BIN_TEST_ERR_INT ": integer expression expected: "
+# define BIN_TEST_BLOCK (1)
+# define BIN_TEST_CHAR (1 << 1)
+# define BIN_TEST_DIR (1 << 2)
+# define BIN_TEST_EXIST (1 << 3)
+# define BIN_TEST_FILE (1 << 4)
+# define BIN_TEST_GID (1 << 5)
+# define BIN_TEST_SLNK_H (1 << 6)
+# define BIN_TEST_SLNK_L (1 << 7)
+# define BIN_TEST_STR_NZERO (1 << 8)
+# define BIN_TEST_FIFO (1 << 9)
+# define BIN_TEST_READ (1 << 10)
+# define BIN_TEST_SOCKET (1 << 11)
+# define BIN_TEST_SIZE_NZERO (1 << 12)
+# define BIN_TEST_FD (1 << 13)
+# define BIN_TEST_UID (1 << 14)
+# define BIN_TEST_WRITE (1 << 15)
+# define BIN_TEST_EXEC (1 << 16)
+# define BIN_TEST_STR_ZERO (1 << 17)
+# define BIN_TEST_STR_EQU (1 << 18)
+# define BIN_TEST_STR_NEQU (1 << 19)
+# define BIN_TEST_INT_EQU (1 << 20)
+# define BIN_TEST_INT_NEQU (1 << 21)
+# define BIN_TEST_INT_GT (1 << 22)
+# define BIN_TEST_INT_GE (1 << 23)
+# define BIN_TEST_INT_LT (1 << 24)
+# define BIN_TEST_INT_LE (1 << 25)
 
-typedef struct 			s_proc
+typedef struct stat		t_stat;
+
+typedef struct			s_proc
 {
-	struct s_proc		*next;       
-  	char				**argv;
+	struct s_proc		*next;
+	char				**argv;
 	pid_t				pid;
 	pid_t				pgid;
 	char				completed;
@@ -117,6 +152,8 @@ typedef struct			s_cmdlist
 	int					built_in;
 	int					fd_pipe_in[2];
 	int					fd_pipe_out[2];
+	sem_t				*sem_0;
+	sem_t				*sem_1;
 	int					fd0;
 	int					fd1;
 	int					fd2;
@@ -128,6 +165,11 @@ typedef struct			s_cmdlist
 	int					andor;
 	int					child_pid;
 	char				*original;
+	int					status;
+	char				*sem_name;
+	sem_t				*semafor;
+	char				*bsem_name;
+	sem_t				*bsemafor;
 	struct s_cmdlist	*next;
 }						t_cmdlist;
 typedef struct			s_pipe
@@ -144,6 +186,7 @@ pid_t					g_pidchild;
 int						g_level;
 int						g_check;
 int						g_color;
+int						g_signal;
 char					**g_shell;
 int						g_and_or;
 int						g_not;
@@ -161,14 +204,30 @@ int						g_subshell;
 int						g_and_or_line;
 t_pipe					*g_pipe;
 int						g_flpi;
-pid_t 					g_pgid;
+pid_t					g_pgid;
 struct termios			g_tmodes;
-int 					g_terminal;
+int						g_terminal;
 int						g_is_interactive;
 int						g_job_ind;
 int						g_std_in;
 int						g_std_out;
 int						g_stderr;
+int						g_redir_block;
+char					*g_sub_str;
+sem_t					*g_semafor;
+char					*g_sem_name;
+sem_t					*g_bsemafor;
+char					*g_bsem_name;
+int						g_subs_counter;
+int						g_calc;
+int						g_subst;
+int						g_shell_num;
+int						g_sem_fl;
+int						g_bsem_fl;
+int						g_pr_wait;
+int						g_nopipe_start;
+
+typedef struct dirent	t_dir;
 
 typedef struct			s_cmd
 {
@@ -187,9 +246,13 @@ typedef struct			s_pipeflag
 {
 	int					flag;
 	int					qflag;
+	int					br_count;
+	int					br_flag;
 	int					start;
 	int					count;
 	int					i;
+	int					flsub;
+	int					b_sl;
 }						t_pipeflag;
 typedef struct			s_greatflag
 {
@@ -201,6 +264,24 @@ typedef struct			s_greatflag
 	int					flag_add;
 	int					flag_all;
 }						t_greatflag;
+
+typedef struct			s_quoteflag
+{
+	int					i;
+	int					qflag;
+	int					br_count;
+	int					br_flag;
+	int					start;
+	int					end;
+	int					b_sl;
+	int					n;
+	int					rc;
+	int					wcount;
+	int					flsub;
+	int					subs_start;
+	int					subs_end;
+	int					i_cmd;
+}						t_quoteflag;
 
 void					exit_shell();
 int						ft_calc_matr_rows(char **in);
@@ -280,7 +361,7 @@ void					ft_rest_in(t_cmdlist *cmd);
 void					ft_rest_out(t_cmdlist *cmd);
 void					ft_rest_err(t_cmdlist *cmd);
 int						ft_set_flag_add(char *ind);
-int						ft_test_fd(int fd, char *s);
+int						ft_test_fd(int fd);
 int						ft_great_dup1(int pref_fd, int out_fd, t_cmdlist *cmd);
 int						ft_great_dup2(int pref_fd, int out_fd, t_cmdlist *cmd);
 void					ft_reset_cmd_great(int j, int i, t_cmdlist *cmd);
@@ -306,8 +387,7 @@ int						ft_set_fd_pipes(t_pipe	*p_head, int fd0[2],
 int						ft_set_fd_pipes_2(t_pipe *p_head, int fd0[2],
 						int fd1[2]);
 int						fd_set_nopipe(t_pipe *p_head);
-void					ft_parent_wait(t_pipe *p_head, int flpi/*,
-						t_cmdlist *first_cmd*/);
+void					ft_parent_wait(t_pipe *p_head, int flpi);
 int						ft_fork(t_pipe *p_head);
 void					ft_init_curcmd(t_cmdlist *cur_cmd);
 void					ft_set_cmd(t_pipe *p_head);
@@ -372,23 +452,24 @@ void					ft_print_one(char *av, int code);
 int						ft_print_hash(void);
 char					*ft_putfnbr(int nb, char *str);
 void					ft_hash_all_del(char *str);
-void					ft_hash_cmd_add(char *path, char *name);
+void					ft_hash_cmd_add(char *path, char *name, int num);
 int						ft_hash_usage(char *av);
 char					*ft_get_hash_path(char *path);
 int						ft_test_sub(char *str, int i);
-char					*ft_get_parm_simple(char *s, int *k, int i);
+char					*ft_get_parm_simple(char *s);
 int						ft_test_job(char *str, int start);
 void					ft_exp_env(char *parm, char *value);
 void					ft_locals_to_env(char **locals);
 char					*ft_get_shell_str(char *in, int len);
-void				    ft_sig_set(void);
+void					ft_sig_set(void);
+void					ft_sig_dfl(void);
 int						ft_test_args(char *args);
 int						ft_parse_pipe(char **ret);
 int						ft_if_job(t_cmdlist *cur_cmd);
 void					ft_print_start_job(t_job *cur_job);
 t_job					*ft_del_job(t_job *del);
 int						ft_set_job_str(char *start, int end);
-void					ft_add_proc(t_cmdlist *cur_cmd);
+void					ft_add_proc(t_cmdlist *cur_cmd, t_job *job);
 char					*ft_print_job_pref(t_job *cur_job);
 void					ft_update_job_status(t_job *cur);
 void					ft_print_jobs(void);
@@ -412,9 +493,150 @@ void					ft_test_job_status(pid_t pid, int status);
 int						ft_put_job_status(t_job *job, t_proc *proc, int stat);
 int						ft_cmd_bg(char **av);
 int						ft_cmd_kill(char **av);
-void					ft_test_tstp(pid_t pid);
+void					ft_test_tstp(pid_t pid, int status);
 t_job					*ft_new_job(t_cmdlist *cur_cmd);
 void					ft_insert_job(t_job *cur_job);
 void					ft_set_job_cont(t_job *j);
+void					ft_set_cmd_exit_status(int status);
+char					**ft_globbing(char **table);
+bool					glob_check(char *str, char *pat, char *b_str,
+						char *b_pat);
+void					ft_signal_child(int signo);
+
+char					*ft_read_alias(void);
+int						ft_arr_len(char **av);
+void					ft_change_alias(char *new_alias);
+char					*ft_find_alias(char *str, char *alias);
+char					*ft_del_alias(char *alias_str, char *alias);
+int						ft_alias(char **av);
+void					ft_output_alias(char *all_alias, char *av,
+										int flag_alias, int *ret);
+void					print_all_alias(char *all_alias, int flag_alias);
+int						ft_unalias(char **av);
+char					*take_value_alias(char *all_alias, char *alias_name);
+char					**ft_get_alias(char **av, int i);
+void					ft_rec_log(char *str);
+void					ft_new_semafor(t_cmdlist *cur_cmd);
+void					ft_del_semafor(t_cmdlist *cur_cmd);
+int						ft_wait_semafor(t_cmdlist *cur_cmd);
+void					ft_add_semafor(t_pipe *p_head);
+char					*param_rem(char *val, char *flag, char *pat);
+int						ft_close_fd(char *str, int in);
+int						ft_get_cmd_exit_status(int status);
+char					**ft_cnt_subs(char **av);
+char					**ft_tst_calc(char **str, int n, int start, int end);
+char					**ft_all_calc_tst(char **str);
+char					*ft_calc(char *str);
+int						ft_check_ekran(char *str, int pos);
+int						bin_test(char **tokens);
+int						bin_test_unary(char *arg, int flag);
+int						bin_test_binary(char *arg1, char *arg2, int flag);
+int						bin_test_get_unary(char *arg, int *flag);
+int						bin_test_get_binary(char *arg, int *flag);
+int						bin_test_error(char *var, char *message);
+int						bin_test_return(int code);
+void					ft_print_sig(pid_t pid, int signo, int status);
+void					ft_cmd_to_job(int status);
+int						ft_set_job_status(t_job *job, int n, int status);
+char					*glob_join(char *path, char *name);
+void					ft_check_q(int i, int *qflag, char *str, int b_sl);
+void					ft_check_b(int i, char *str, int *br_flag,
+						int *br_count);
+void					ft_check_init(int *i, int *qflag, int *br_c,
+						int *br_f);
+void					ft_do_cmd_list_ini(t_pipe *p_head, int flpi);
+void					ft_set_pgid(t_cmdlist *cmd, int flpi);
+int						ft_do_cmd_loop(t_pipe *p_head, int fd0[2], int fd1[2],
+						int flpi);
+void					ft_add_built_to_list(int j);
+char					*ft_cre_parm_str(char *parm, char *value);
+void					ft_cacl_test_b(t_quoteflag *f, char *str);
+void					ft_calc_test_q(t_quoteflag *f, char *str);
+t_quoteflag				*ft_get_quoteflag(void);
+void					ft_ini_quoteflag(t_quoteflag	*f);
+char					**ft_test_calc(t_quoteflag *f, char	**str);
+void					ft_test_doll_calc(t_quoteflag *f, char **str);
+void					ft_set_b_sl(t_quoteflag *f, char **str);
+char					**ft_resize_matr(char **str);
+int						ft_split_pipes_words(char *str);
+char					**ft_resize_matr_n(char **str, int n, int add);
+int						ft_test_parname(char *str);
+char					*ft_print_badsub(char *s, int i, char *tmp);
+int						ft_subst_lbr(char *s);
+void					ft_subst_tst_ps(t_quoteflag *f, char **str, int n);
+void					ft_subst_tst_pf(t_quoteflag *f, char **str, int n);
+int						ft_subst_tst_exe(t_quoteflag *f, char **str, int n);
+char					**ft_cnt_subs_exe(char **str, int n, int start,
+						int end);
+int						ft_repl_parm_sub(char **val);
+char					*ft_do_parm_subs(char *tmp, int *n);
+char					*ft_get_parm_ll(char *tmp);
+char					*ft_get_parm_qq(char *tmp);
+char					*ft_get_parm_rr(char *tmp);
+char					*ft_get_parm_prc(char *tmp);
+char					*ft_get_parm_start(char *s, int k, int *j);
+char					*ft_get_val_prc(char *s, int j, char *tmp);
+char					*ft_get_val_rr(char *s, int j, char *tmp);
+int						ft_get_val_plus(char *s, int j, char *tmp, char **val);
+int						ft_get_val_min(char *s, int j, char *tmp, char **val);
+int						ft_repl_check(char *s, int len, char *q, int j);
+void					ft_sig_do(int signo, int status, pid_t pid);
+void					ft_ini_quoteflag_spl(t_quoteflag *f);
+int						ft_all_pipe_words(char **ret, char const *str);
+t_list					*ft_globbing_path_cycle(DIR *dir, char *path,
+						char *pat);
+bool					ft_globbing_split(char *line, char **path,
+						char **pat);
+void					ft_globbing_addline(char *line, t_list **alist);
+void					ft_exe_subshell(void);
+char					*ft_init_loop_read(void);
+void					ft_init_shell_val(char **argv, char **environ);
+char					*ft_get_name(void);
+char					*param_remlarge(char *val, char *pat);
+void					parm_remlarge_inloop(int i, int l, char *save,
+						char *val);
+t_quoteflag				*ft_init_parse_init(void);
+int						ft_free_qf(t_quoteflag *f);
+void					ft_redir_great_close(int out_fd, int direction);
+int						ft_tst_great_fd_loop(t_cmdlist *cmd, int i,
+						t_greatflag *f);
+int						ft_set_nopipe_start(t_cmdlist *cur_cmd);
+void					ft_child_pipe_varset(t_cmdlist *cur_cmd);
+void					ft_close_g_semafors(void);
+int						ft_child_check_subsh(t_cmdlist *cur_cmd);
+void					ft_child_pipe_init(t_cmdlist *cur_cmd, int flpi);
+char					**ft_get_myalias(char **args);
+char					*ft_get_lpwd(char **locals);
+int						ft_parse_if_4(char *str, t_quoteflag *f);
+int						ft_parse_if_3(t_quoteflag *f, char *str);
+int						ft_check_parm_unrec(char *s, int j);
+int						ft_check_ekran_full(char *str, int pos);
+char					*del_ekran(char *old_str);
+void					ft_pipe_split_sp(t_pipeflag *fl, char **ret,
+						char const *str);
+int						ft_msg_c(char *s1, char *s2, int code);
+int						ft_less_w0(int *in_fd, int i, int j, t_cmdlist *cmd);
+int						ft_less_w1(int *in_fd, int i, t_cmdlist *cmd);
+t_cmdlist				*ft_child_pipe_row32(t_cmdlist *cur_cmd);
+int						ft_test_file_mame(char *fname);
+char					*ft_repl_parm_n(char *s, int *flag, int *j);
+char					*ft_repl_til_flag(int *flag, int j, char *s, int code);
+int						ft_free_ret(char *s);
+char					*ft_get_sufx_name(char	*s, int *j, int l);
+char					*ft_calc_in_calc(char *s);
+char					ft_get_nextp_world(char	*s);
+int						ft_pr_msg_rc(char *s1, char *s2);
+int						ft_get_words(void);
+void					ft_pipe_split_sps(t_pipeflag *fl, char const *str);
+void					ft_pipe_split_4s(t_pipeflag *fl, char const *str);
+void					ft_pipe_split_3s(t_pipeflag *fl, char const *str);
+int						ft_check_pipe_n(char *str, t_quoteflag *f);
+void					ft_set_andor(int i, t_quoteflag *f);
+void					ft_do_export(char *str, int flag, int j);
+int						ft_get_fd_by_n(int i, t_cmdlist *cmd,
+														char *ind, int *j);
+int						ft_test_f_andor(t_quoteflag *f, char *str);
+void					ft_tst_gf_norm(t_greatflag *f, t_cmdlist *cmd, int i,
+						int l);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/27 18:24:59 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/12 12:05:08 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/23 11:36:48 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	ft_unset_env_parm(char *str)
 	}
 }
 
-char		**ft_put_locals(char **av)
+char	**ft_put_locals(char **av)
 {
 	int i;
 
@@ -111,4 +111,3 @@ int		ft_shell_put_test(char *str)
 		return (0);
 	}
 }
-

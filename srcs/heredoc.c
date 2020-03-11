@@ -6,16 +6,16 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/02 22:03:52 by thaley            #+#    #+#             */
-/*   Updated: 2019/09/18 12:26:55 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/24 18:46:51 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-char		*ft_clear_quotes(char *s)
+char			*ft_clear_quotes(char *s)
 {
-	int		i;
-	char	c;
+	int			i;
+	char		c;
 
 	if (s)
 	{
@@ -40,19 +40,18 @@ char		*ft_clear_quotes(char *s)
 
 char			**ft_assig_add(t_cmdlist *cur_cmd, int i)
 {
-	char	**tmp;
-	int 	j;
-	
-	if (cur_cmd && cur_cmd->avcmd && cur_cmd->avcmd[i]
-//		&& ft_shell_put_test(cur_cmd->avcmd[i]) == 0
-		)
+	char		**tmp;
+	int			j;
+
+	if (cur_cmd && cur_cmd->avcmd && cur_cmd->avcmd[i])
 	{
 		j = 0;
-		if (!(cur_cmd->locals)) 
+		if (!(cur_cmd->locals))
 			tmp = malloc(sizeof(char *) * 2);
 		else
 		{
-			tmp = malloc(sizeof(char *) * (ft_calc_matr_rows(cur_cmd->locals) + 2));
+			tmp = malloc(sizeof(char *) *
+								(ft_calc_matr_rows(cur_cmd->locals) + 2));
 			while (cur_cmd->locals[j])
 			{
 				tmp[j] = cur_cmd->locals[j];
@@ -68,86 +67,64 @@ char			**ft_assig_add(t_cmdlist *cur_cmd, int i)
 	return (cur_cmd->locals);
 }
 
+t_cmdlist		*ft_local_assig_assign(t_cmdlist *cur_cmd, char *tmp,
+															int i, int j)
+{
+	if (ft_strncmp(tmp, "PATH", j) == -7892)
+		ft_go_export(cur_cmd->avcmd[i], 0);
+	else
+	{
+		while ((j >= 0) && (cur_cmd->avcmd[i][j]))
+		{
+			if (j == 0 && (ft_isalpha(cur_cmd->avcmd[i][j]) ||
+						(cur_cmd->avcmd[i][j] == '_')))
+				cur_cmd->locals = ft_assig_add(cur_cmd, i);
+			else if (j > 0 && (!(ft_isalpha(cur_cmd->avcmd[i][j])))
+						&& (!(ft_isdigit(cur_cmd->avcmd[i][j])))
+						&& (!(cur_cmd->avcmd[i][j] == '_')))
+				return (cur_cmd);
+			j--;
+		}
+	}
+	return (0);
+}
+
 t_cmdlist		*ft_local_assig(t_cmdlist *cur_cmd)
 {
-	int		i;
-	char	*tmp;
-	int		j;
-	
+	int			i;
+	int			j;
+	char		*tmp;
+	t_cmdlist	*ans_assign;
+
 	if (cur_cmd && cur_cmd->avcmd)
 	{
 		i = 0;
 		while (cur_cmd->avcmd[i])
 		{
 			if ((tmp = ft_strchr(cur_cmd->avcmd[i], '=')) &&
-				((j = tmp - cur_cmd->avcmd[i] - 1) > -1))
+				((j = tmp - cur_cmd->avcmd[i] - 1) > -1) &&
+				ft_check_ekran(cur_cmd->avcmd[i], j + 1) == 0)
 			{
-				if (ft_strncmp(tmp, "PATH", j) == -7892)
-					ft_go_export(cur_cmd->avcmd[i], 0);
-				else
-				{
-					while ((j >= 0) && (cur_cmd->avcmd[i][j]))
-					{
-						if (j == 0 && (ft_isalpha(cur_cmd->avcmd[i][j]) ||
-							 (cur_cmd->avcmd[i][j] == '_')))
-							cur_cmd->locals = ft_assig_add(cur_cmd, i);
-						else if (j > 0 && (!(ft_isalpha(cur_cmd->avcmd[i][j])))
-						&& (!(ft_isdigit(cur_cmd->avcmd[i][j])))
-						&& (!(cur_cmd->avcmd[i][j] == '_')))
-							return (cur_cmd);
-						j--;
-					}
-				}
+				if ((ans_assign = ft_local_assig_assign(cur_cmd, tmp, i, j)))
+					return (ans_assign);
 				i++;
 			}
 			else
-				break ;		
+				break ;
 		}
 		cur_cmd->avcmd = ft_press_matr(cur_cmd->avcmd);
 	}
 	return (cur_cmd);
 }
 
-int				ft_type(char **av)
+int				ft_test_put_env(char *str)
 {
-	int 	i;
-	char	*tmp;
+	char		*tmp;
+	int			j;
+	int			i;
 
-	i = 1;
-	tmp = NULL;
-	while (av && av[i])
-	{
-		ft_set_shell("?", "0");
-		if (ft_test_built_in(av[i]) == 1)
-		{
-			ft_putstr(av[i]);
-			ft_putstr(" is a shell builtin\n");
-		}
-		else if (!(tmp = ft_get_file_path(av[i], g_envi->first_list)))
-		{
-			ft_print_msg(": type: not found ", av[i]);
-			g_built_rc = 1;
-			ft_set_shell("?", "1");
-		}
-		else
-		{
-			ft_putstr(av[i]);
-			ft_putstr(" is ");
-			ft_putstr(tmp);
-			ft_putstr("\n");
-		}
-		i++;
-	}
-	return (1);
-}
-
-int					ft_test_put_env(char *str)
-{
-	char	*tmp;
-	int		j;
-	int i;
-	
-	if ((tmp = ft_strchr(str, '=')) && ((j = tmp - str) > 0))
+	if ((tmp = ft_strchr(str, '='))
+				&& ((j = tmp - str) > 0))
 	{
 		i = 0;
 		while (g_envi && g_envi->env && g_envi->env[i])
@@ -161,5 +138,5 @@ int					ft_test_put_env(char *str)
 			i++;
 		}
 	}
-	return (0);	
+	return (0);
 }

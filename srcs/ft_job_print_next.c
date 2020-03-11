@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/10/15 11:48:52 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/10 20:43:47 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	ft_print_jobs(void)
 		if (job->ready > 0)
 		{
 			ft_print_job_line(job, 0);
-			if (job->ready == 1)
+			if (job->ready == 1 || job->ready == 4)
 				job = ft_del_job(job);
 			else
 				job->ready = 0;
@@ -66,20 +66,34 @@ int		ft_cmd_jobs(char **av)
 	return (1);
 }
 
-void	ft_print_job_list(int i, int start, int fl, char **av)
+void	ft_print_job_info(t_job *job, t_job *jobdel, int fl)
 {
-	t_job	*job;
-
-	job = g_job_first;
-	if (i == 0 || start == 0)
+	while (job)
 	{
-		while (job)
+		ft_print_job_line(job, fl);
+		if (job->ready == 1 || job->ready == 4)
 		{
-			ft_print_job_line(job, fl);
+			jobdel = job->next;
+			job = ft_del_job(job);
+			job = jobdel;
+		}
+		else
+		{
 			job->ready = 0;
 			job = job->next;
 		}
 	}
+}
+
+void	ft_print_job_list(int i, int start, int fl, char **av)
+{
+	t_job	*job;
+	t_job	*jobdel;
+
+	job = g_job_first;
+	jobdel = NULL;
+	if (i == 0 || start == 0)
+		ft_print_job_info(job, jobdel, fl);
 	else
 	{
 		while (av[start])

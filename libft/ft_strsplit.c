@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strsplit.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wveta <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 14:40:43 by wveta             #+#    #+#             */
-/*   Updated: 2019/04/12 21:55:30 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/06 18:28:08 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ static int	ft_all_words(char **ret, char const *s, char c)
 	i = -1;
 	count = -1;
 	flag = 0;
-	while (i++ <= (int)ft_strlen(s))
+	while (++i <= (int)ft_strlen(s))
 	{
 		if ((s[i] == c || s[i] == '\0') && (flag == 1))
 		{

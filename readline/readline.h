@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/23 17:54:28 by thaley            #+#    #+#             */
-/*   Updated: 2019/10/16 19:09:40 by thaley           ###   ########.fr       */
+/*   Updated: 2019/12/26 20:01:06 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,93 +33,165 @@
 # include "define.h"
 # include "struct.h"
 
-char		*read_line(char *prompt);
-void		open_fd(void);
+/*
+**	readline.c
+*/
 
-void		creat_history(void);
-void		history_move(int direct);
-void		ft_history_put(void);
+char			*read_line(char *prompt);
 
-void		init_input(char *prompt);
-t_shell		*init_term(t_shell *shell);
-char		*init_loop(t_shell *shell);
+/*
+**	init.c
+*/
 
-void		signal_handler(int sign);
-void		signal_handler_tab(int cursor);
-void		signal_handler_quote(void);
-void		ft_signal_win_size(int signo);
+void			init_input(char *prompt);
+t_shell			*init_term(t_shell *shell);
 
-int			match_key(char *c);
-int			match_history_key(char *c);
+/*
+**	match_key.c
+*/
 
-t_cursor	get_cursor_pos(void);
-void		update_cursor(void);
+int				match_key(char *str);
 
-void		ft_move_left(void);
-void		ft_move_right(void);
-void		move_word_left(void);
-void		move_word_right(void);
+/*
+**	print.c
+*/
 
-void		goto_home_of_line(void);
-void		goto_end_of_line(void);
-void		move_line_down(void);
-void		ft_line_up(void);
-void		ft_line_down(void);
-void		old_input(void);
-void		modify_input(char *str);
-void		input_from_file(char *str);
-void		input_from_array(char *str);
+void			print(char *str);
+int				take_curs(void);
 
-int			autocomplition(char *c);
-void		count_amount(char *path, char *tmp);
-void		print_cmds(char **str);
+/*
+**	history.c
+*/
 
-char		**find_match(char *path, char *tmp);
-void		search_cmd(void);
-void		search_file(char *tmp);
-char		*find_tail(char *str);
-void		parse_path(char *tmp);
+char			**remake_hist(void);
+void			create_history(void);
 
-void		ft_free(char *str);
-void		free_array(char **arr);
-void		free_struct(t_shell **shell);
+/*
+**	exit.c
+*/
 
-void		print_cmds(char **str);
-void		ascii_sort(char **array);
+char			*return_func(char *str, char *input);
+void			mall_check(void);
+void			bad_fd_error(int fd, char *tmp);
 
-void		ft_paste(void);
-void		ft_cut(char *c);
-int			ft_copy(char *c);
-int			only_space(void);
-int			parse_quotes(void);
-int			printable(char *c, int i);
-int			ft_isspace2(char st);
+/*
+**	move_left_right.c
+*/
 
-int			search_in_hist(void);
+void			move_curs_end(void);
+void			move_left(void);
+void			move_right(void);
+void			move_word_left(void);
+void			move_word_right(void);
 
-void		update_history(void);
-void		remade_hist(void);
+/*
+**	delete.c
+*/
 
-int			history_return_n(char *str);
-char		*history_replace_n(char *str);
-char		*finish_loop(char c, t_shell *shell);
-int			ctrl_d(char *c);
+void			delete_char(void);
+void			delete_char_two(void);
 
-void		insert_char_color(char c, int all);
-void		insert_char(char *c);
+/*
+**	home_end.c
+*/
 
-void		delete_char_two(void);
-void		delete_char(void);
+void			go_home_pos(void);
+void			go_end_pos(void);
 
-char		*calc_path(char *s);
+/*
+**	hist_move.c
+*/
 
-void		mall_check(void);
+void			hist_move(int direction);
 
-int			not_move_hist(int direct);
-int			count_n(void);
-void		move_cursor_hist(void);
+/*
+**	line.c
+*/
 
-void		move_line_up(void);
-void		start_of_line(int up_down);
+void			move_end_of_line(void);
+void			move_line_down(void);
+void			move_line_up(void);
+
+/*
+**	free.c
+*/
+
+void			free_all(t_shell *shell);
+void			ft_free(char *str);
+void			null_autocmpl(int time);
+void			null_multiline(void);
+
+/*
+**	parse_quotes.c
+*/
+
+int				parse_quotes(void);
+
+/*
+**	signal.c
+*/
+
+void			ft_signal_win_size(int signo);
+
+/*
+**	autocomplition.c
+*/
+
+int				autocmp(char *str);
+
+/*
+**	find_file.c
+*/
+
+void			find_file(char *key);
+void			count_file_match(char *key);
+void			find_match(char *key);
+
+/*
+**	sort.c
+*/
+
+void			ascii_sort(char **array);
+
+/*
+**	print_autocompl.c
+*/
+
+void			print_array(char **arr);
+void			change_input(char **str, char *key);
+
+/*
+**	parsepath.c
+*/
+
+char			*parse_path(char *tmp);
+
+/*
+**	find_cmd.c
+*/
+
+void			find_cmd(char *key);
+
+/*
+**	find_key.c
+*/
+
+char			*find_key(int curs);
+
+/*
+**	count_lines.c
+*/
+
+void			take_pos(int save_curs);
+void			count_lines(void);
+void			error_msg(int err, int num, t_shell *shell);
+void			scroll_top(void);
+void			for_print(char	**str);
+char			*check_shift(char *str);
+int				putint(int c);
+void			del_input(void);
+char			*check_curs_pos(int *save_curs, char *buf,\
+								char *str, char *tmp);
+int				temp_cursor(void);
 
 #endif

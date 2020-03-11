@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/30 15:32:13 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/10 20:53:09 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ t_proc	*ft_new_proc(t_cmdlist *cur_cmd)
 		tmp->pid = cur_cmd->pid_z;
 		tmp->argv = ft_dup_char_matr(cur_cmd->avcmd);
 		tmp->status = 0;
-		tmp->completed = ' ';
-		tmp->stopped = ' ';
+		tmp->completed = 0;
+		tmp->stopped = 0;
 		tmp->next = NULL;
 	}
 	return (tmp);
@@ -49,25 +49,16 @@ int		ft_put_proc(t_proc *pr, t_job *jb)
 	return (0);
 }
 
-void	ft_add_proc(t_cmdlist *cur_cmd)
+void	ft_add_proc(t_cmdlist *cur_cmd, t_job *job)
 {
 	t_proc	*tmp;
-	t_job	*job;
 
-	if (!(job = g_job_first))
+	if (!(job))
 		return ;
 	if ((tmp = ft_new_proc(cur_cmd)))
 	{
-		while (job)
-		{
-			if (job->pgid == tmp->pgid)
-			{
-				if (ft_put_proc(tmp, job) == 0)
-					free(tmp);
-				return ;
-			}
-			job = job->next;
-		}
+		if (ft_put_proc(tmp, job) == 0)
+			free(tmp);
 	}
 }
 

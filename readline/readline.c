@@ -5,74 +5,83 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/08/05 17:44:03 by thaley            #+#    #+#             */
-/*   Updated: 2019/10/16 19:11:03 by thaley           ###   ########.fr       */
+/*   Created: 2019/11/19 19:09:43 by thaley            #+#    #+#             */
+/*   Updated: 2019/12/27 12:15:35 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "readline.h"
 
-/*
-** check standart file stream with term
-*/
-
-void			open_fd(void)
+static int	is_end_char(char c)
 {
-	char	*tmp;
-	int		fd1;
-	int 	fd2;
-	
-	tmp = NULL;
-	if (!isatty(STDIN_FILENO))
-		exit(EXIT_FAILURE);
-	if (!isatty(STDOUT_FILENO))
+	if (c == 3 || c == SET_COLOR || c == SET_SIG || c == 12)
+		return (1);
+	else if (c == 4 && !g_input->input_len)
+		return (1);
+	else if (c == ENTER && !parse_quotes())
+		return (1);
+	return (0);
+}
+
+int			is_print(char *str)
+{
+	int		i;
+
+	i = 0;
+	while (str[i])
 	{
-		tmp = ttyname(STDIN_FILENO);
-		fd1 = open(tmp, O_RDWR | O_APPEND , S_IRUSR | S_IWUSR);
-		if (fd1 == -1)
-		{
-			ft_print_msg(" : Error open STDOUT: ", tmp);
-			exit(EXIT_FAILURE);
-		}
+		if ((str[i] != 10 && str[i] < 32) || str[i] > 126)
+			return (0);
+		i++;
 	}
-	if (!isatty(STDERR_FILENO))
+	return (1);
+}
+
+char		*read_loop(void)
+{
+	char	c[4096];
+
+	signal(SIGWINCH, ft_signal_win_size);
+	while (1)
 	{
-		tmp = ttyname(STDIN_FILENO);
-		fd2 = open(tmp, O_RDWR | O_APPEND, S_IRUSR | S_IWUSR);
-		if (fd2 == -1)
-		{
-			ft_print_msg(" : Error open STDERR: ", tmp);
-			exit(EXIT_FAILURE);
-		}	
+		ft_bzero(c, 4096);
+		read(STDIN_FILENO, &c, 4095);
+		if (g_input->autocompl.tab_count == 1 && c[0] != TAB)
+			null_autocmpl(1);
+		if (match_key(c) || autocmp(c))
+			continue ;
+		else if (is_end_char(c[0]) && !c[1])
+			return (return_func(c, g_input->input));
+		else
+			print(c);
 	}
 }
 
-/*
-** main for readline
-*/
-
-char			*read_line(char *prompt)
+void		check_cursor(void)
 {
-	t_shell			*shell;
-	char			*ret;
+	int		curs;
 
+	curs = take_curs();
+	if (curs != 1)
+		write(STDERR_FILENO, "\n", 1);
+}
+
+char		*read_line(char *prompt)
+{
+	char	*ret;
+	t_shell	*shell;
+
+	ret = NULL;
 	shell = NULL;
 	init_input(prompt);
 	shell = init_term(shell);
-	g_input->cursor = get_cursor_pos();
-	if (g_input->cursor.row == 0)
-		return (NULL);
-	if (g_input->cursor.col != 1)
-		write(1, "\n", 1);
-	ft_putstr_fd(prompt, STDIN_FILENO);
-	g_input->cursor = get_cursor_pos();
-	g_hist->cursor = 0;
-	if (g_input->head != '\0' && g_input->head != '\n')
-		insert_char(&g_input->head);
-	ft_putstr_fd(tgetstr("sc", NULL), STDIN_FILENO);
-	ret = init_loop(shell);
-	history_return_n(ret);
+	check_cursor();
+	ft_putstr_fd(prompt, STDERR_FILENO);
+	ret = read_loop();
+	go_end_pos();
+	if (tcsetattr(0, TCSADRAIN, &shell->old_param) < 0)
+		error_msg(-1, 3, shell);
+	free_all(shell);
 	write(1, "\n", 1);
-	free_struct(&shell);
 	return (ret);
 }

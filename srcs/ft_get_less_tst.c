@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 19:25:12 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/04 21:21:23 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/26 23:47:41 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,36 @@ int		ft_get_tless(t_cmdlist *cmd, int i, int j, char *ind)
 		}
 	}
 	ind[0] = '\0';
+	cmd->here = ft_replays(cmd->here);
+	return (ft_test_file_mame(cmd->here));
+}
+
+int		ft_redir_2lesshd_n(t_cmdlist *cmd, char *ind, int i, int j)
+{
+	int		j1;
+	char	*tmp;
+	char	*tmp2;
+
+	if (!(tmp = ft_get_heof(ind, cmd, i, j)))
+		return (-1);
+	tmp2 = ft_heredoc(tmp);
+	free(tmp);
+	tmp = ft_strdup("/tmp/");
+	tmp = ft_add_strnum(tmp, getpid());
+	tmp = ft_strfjoin(tmp, "_h");
+	tmp = ft_add_strnum(tmp, g_subs_counter);
+	g_subs_counter++;
+	j1 = open(tmp, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	write(j1, tmp2, ft_strlen(tmp2));
+	free(tmp2);
+	close(j1);
+	tmp2 = ft_strndup(cmd->avcmd[i], j);
+	tmp2 = ft_strfjoin(tmp2, "<");
+	tmp2 = ft_strfjoin(tmp2, tmp);
+	free(tmp);
+	tmp2 = ft_strfjoin(tmp2, cmd->avcmd[i] + j);
+	free(cmd->avcmd[i]);
+	cmd->avcmd[i] = tmp2;
 	return (0);
 }
 
@@ -37,24 +67,24 @@ int		ft_redir_2lesshd(t_cmdlist *cmd, int i)
 {
 	int			j;
 	char		*ind;
-	char		*heof;
 
-	if (cmd->avcmd[i] && (cmd->avcmd[i][0] != '\'' && cmd->avcmd[i][0] != '"')
-		&& (ind = (ft_strchr(cmd->avcmd[i], '<'))))
+	j = 0;
+	while (cmd->avcmd[i] && (ind = (ft_strstr(cmd->avcmd[i] + j, "<<"))))
 	{
 		j = ind - cmd->avcmd[i];
-		if (ft_strncmp(ind, TLESS, 3) == 0)
+		if (ft_check_ekran(cmd->avcmd[i], j) == 0)
 		{
-			if (ft_get_tless(cmd, i, j, ind) == -1)
-				return (-1);
+			if (ft_strncmp(ind, DLESS, 2) == 0
+			&& cmd->avcmd[i][j + 2] != '<')
+			{
+				if (ft_redir_2lesshd_n(cmd, ind, i, j) == -1)
+					return (-1);
+				j = -1;
+			}
+			else
+				return (0);
 		}
-		else if (ft_strncmp(ind, DLESS, 2) == 0 && cmd->avcmd[i][j + 2] != '<')
-		{
-			if (!(heof = ft_get_heof(ind, cmd, i, j)))
-				return (-1);
-			cmd->here = ft_heredoc(heof);
-			free(heof);
-		}
+		j++;
 	}
 	return (0);
 }

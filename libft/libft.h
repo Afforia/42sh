@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wveta <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/03 16:17:37 by wveta             #+#    #+#             */
-/*   Updated: 2019/04/19 20:07:21 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/08 01:48:29 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,5 +88,13 @@ int					ft_isupper(int c);
 int					ft_isblank(int s);
 int					ft_islower(int c);
 int					ft_isxdigit(int c);
+void				ft_free_table(char ***table);
+void				ft_lst_sort(t_list **alist, int (*cmp)());
+char				*ft_strndup(const char *s, size_t n);
+int					ft_lstsize(t_list *lst);
+void				ft_lstadd_last(t_list **alst, t_list *new);
+int					ft_isnumber(char *str);
+int					ft_strchrlen(const char *s, int c);
+char				*ft_strnjoin(char *s1, char *s2, int len);
 
 #endif

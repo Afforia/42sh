@@ -6,7 +6,7 @@
 /*   By: wveta <wveta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/27 18:24:59 by wveta             #+#    #+#             */
-/*   Updated: 2019/09/11 19:58:38 by wveta            ###   ########.fr       */
+/*   Updated: 2019/12/26 16:09:23 by wveta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 char	*ft_get_env2(char *parm, char **shell)
 {
-	int	i;
-	int	j;
+	int		i;
+	int		j;
 
 	if (shell)
 	{
@@ -25,7 +25,7 @@ char	*ft_get_env2(char *parm, char **shell)
 		{
 			if (ft_strnequ(parm, shell[i], j) == 1 &&
 			shell[i][j] == '=')
-				return (ft_strdup(shell[i] + j + 1));
+				return (ft_replays(ft_strdup(shell[i] + j + 1)));
 			i++;
 		}
 	}
@@ -45,13 +45,7 @@ char	**ft_set_shell(char *parm, char *value)
 		if (ft_strcmp(value, "0") == 0)
 			g_rc = 0;
 	}
-	if (!(str = malloc(sizeof(char) * (2 + ft_strlen(parm) +
-			ft_strlen(value)))))
-		exit_shell(1);
-	str[0] = '\0';
-	str = ft_strcat(str, parm);
-	str = ft_strcat(str, "=");
-	str = ft_strcat(str, value);
+	str = ft_cre_parm_str(parm, value);
 	if ((i = ft_get_ind_env(parm, g_shell)) == -1)
 		g_shell = ft_add_shell(str, g_shell);
 	else
